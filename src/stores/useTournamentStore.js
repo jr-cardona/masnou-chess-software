@@ -10,57 +10,62 @@ export const useTournamentStore = defineStore('tournamentStore', {
         status: 'idle',
     }),
     actions: {
-        startTournament() {
+        startPairing() {
             const playersStore = usePlayersStore();
+            const queueStore = useQueueStore();
+            const gamesStore = useGamesStore();
             const totalPlayers = playersStore.players.length;
 
             if (totalPlayers < 3 || this.status === 'inCourse') {
                 return;
             }
 
-            // Init
-            const queueStore = useQueueStore();
-            const gamesStore = useGamesStore();
             useHistoryStore().saveState();
-            this.status = 'inCourse';
-            this.timer = 600;
 
-            // # Boards/Players calculation
-            const boards = Math.round(totalPlayers / 3);
-
-            // Pairing
-            let index = 0;
-            for (let board = 0; board < boards; board++) {
-                if (index + 1 < totalPlayers) {
-                    gamesStore.activeGames[board] = {
-                        white: playersStore.players[index].name,
-                        black: playersStore.players[index + 1].name,
-                    };
-                    index += 2;
-                }
-            }
-
-            // The rest to the queue
-            queueStore.queue = playersStore.players.slice(index).map(player => player.name);
+            this.calculateInitialQueue(queueStore, playersStore, totalPlayers)
+            const playersNotInQueue = playersStore.players.filter(
+                player => !queueStore.queue.includes(player.name)
+            );
+            this.assignGames(gamesStore, playersNotInQueue);
         },
+
+        calculateInitialQueue(queueStore, playersStore, totalPlayers) {
+            const expectedQueueLength = totalPlayers - ((Math.round(totalPlayers / 3)) * 2);
+
+            if (queueStore.queue.length < expectedQueueLength) {
+                const missingInQueue = expectedQueueLength - queueStore.queue.length;
+                const queueSet = new Set(queueStore.queue);
+                const availablePlayers = playersStore.players.filter(player => !queueSet.has(player.name));
+                availablePlayers.slice(-missingInQueue).forEach(player => queueStore.enqueue(player.name));
+            }
+        },
+
+        assignGames(gamesStore, playersNotInQueue) {
+            const midIndex = Math.ceil(playersNotInQueue.length / 2);
+            const firstHalf = playersNotInQueue.slice(0, midIndex);
+            const secondHalf = playersNotInQueue.slice(midIndex);
+
+            firstHalf.forEach((player, index) => {
+                if (secondHalf[index]) {
+                    gamesStore.activeGames[index] = {white: player.name, black: secondHalf[index].name};
+                }
+            });
+        },
+
+        startTournament() {
+            if (this.status !== 'idle') return;
+            this.status = 'inCourse';
+        },
+
+        endTournament() {
+            if (this.status !== 'inCourse') return;
+            this.status = 'finished';
+        },
+
         decreaseTimer() {
             if (this.timer > 0) {
                 this.timer--;
             }
         },
-        endTournament() {
-            const gamesStore = useGamesStore();
-            const queueStore = useQueueStore();
-            useHistoryStore().saveState();
-            this.status = 'finished';
-            gamesStore.activeGames = [];
-            queueStore.queue = [];
-        },
     },
-    persist: {
-        enabled: true,
-        strategies: [
-            {key: 'tournament', storage: localStorage, paths: ['players', 'activeGames', 'queue', 'isRunning', 'timer']}
-        ]
-    }
 });

@@ -1,10 +1,13 @@
 <template>
-  <div class='container-full mt-4'>
-    <h2 class='text-center'>
-      Chess Masnou Tournament
-      <b-button variant="primary" @click="store.startTournament" v-if="store.status === 'idle'">▶️ Start</b-button>
-    </h2>
-    <Winners v-if="store.status === 'finished'"/>
+  <div class='container-full'>
+    <div class="text-center mt-3">
+      <h2>Chess Masnou Tournament</h2>
+      <div class="d-flex justify-content-center gap-2 mt-2">
+        <b-button @click="tournamentStore.startPairing" v-if="tournamentStore.status === 'idle'">Pair</b-button>
+        <b-button @click="tournamentStore.startTournament" v-if="tournamentStore.status === 'idle'">Start</b-button>
+      </div>
+    </div>
+    <Winners v-if="tournamentStore.status === 'finished'"/>
     <div v-else>
       <div class="d-flex flex-column flex-md-row mt-4 text-center">
         <TournamentTimer/>
@@ -35,5 +38,5 @@ import QueuePlayersList from "./QueuePlayersTable.vue";
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {BButton} from "bootstrap-vue-3";
 
-const store = useTournamentStore();
+const tournamentStore = useTournamentStore();
 </script>

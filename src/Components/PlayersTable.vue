@@ -2,10 +2,10 @@
   <div class="mt-3">
     <h5>👥 Players List</h5>
     <pre>{{ playersStore.players }}</pre>
-    <b-table :items="sortedPlayers" :fields="['name', 'points', 'elo', 'status', 'actions']" responsive>
+    <b-table :items="playersStore.players" :fields="['name', 'points', 'elo', 'status', 'actions']" responsive>
       <template #cell(actions)="data">
         <b-button
-            v-if="store.status !== 'inCourse'"
+            v-if="tournamentStore.status !== 'inCourse'"
             variant="danger"
             size="sm"
             @click="playersStore.removePlayer(data.item.name)">
@@ -34,17 +34,8 @@
 import {usePlayersStore} from '../stores/usePlayersStore';
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {BTable, BButton} from 'bootstrap-vue-3';
-import {computed} from 'vue';
 
 const playersStore = usePlayersStore();
-const store = useTournamentStore();
+const tournamentStore = useTournamentStore();
 
-const sortedPlayers = computed(() => {
-  return [...playersStore.players].sort((a, b) => {
-    if (b.points !== a.points) {
-      return b.points - a.points;
-    }
-    return b.elo - a.elo;
-  });
-});
 </script>

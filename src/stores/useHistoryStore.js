@@ -25,6 +25,7 @@ export const useHistoryStore = defineStore('historyStore', {
             this.history.push(stateSnapshot);
             if (this.history.length > 100) this.history.shift();
         },
+
         undo() {
             if (this.history.length === 0) return;
 
@@ -37,6 +38,6 @@ export const useHistoryStore = defineStore('historyStore', {
             queueStore.queue = prevState.queue;
             gamesStore.activeGames = prevState.activeGames;
             gamesStore.status = prevState.status;
-        }
+        },
     }
 });

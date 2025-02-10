@@ -7,12 +7,15 @@ export const useQueueStore = defineStore('queueStore', {
     actions: {
         enqueue(name) {
             this.queue.push(name);
+            console.log(this.queue)
         },
+
         dequeue() {
             return this.queue.shift();
         },
+
         removeFromQueue(name) {
             this.queue = this.queue.filter(playerName => playerName !== name);
-        }
+        },
     }
 });

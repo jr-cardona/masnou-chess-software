@@ -14,9 +14,9 @@ import { computed } from 'vue';
 import { useTournamentStore } from '../stores/useTournamentStore';
 import { BTable } from 'bootstrap-vue-3';
 
-const store = useTournamentStore();
+const tournamentStore = useTournamentStore();
 const winners = computed(() =>
-    Object.values(store.players)
+    Object.values(tournamentStore.players)
         .sort((a, b) => b.points - a.points)
         .map((player, index) => ({
           rank: index + 1,
