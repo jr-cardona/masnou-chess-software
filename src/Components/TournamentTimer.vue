@@ -1,6 +1,6 @@
 <template>
   <div class="text-center my-3 w-100 display-1">
-    <b-badge :variant="tournamentStore.timer <= 90 ? 'danger' : 'primary'" class="timer-badge w-100 p-3">
+    <b-badge :variant="tournamentStore.timer <= 90 ? 'danger' : 'primary'" class="timer-badge w-50 p-3">
       {{ formattedTime }}
     </b-badge>
   </div>

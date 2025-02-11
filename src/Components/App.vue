@@ -1,26 +1,31 @@
 <template>
   <div class='container-full'>
+    <SettingsModal></SettingsModal>
     <div class="text-center mt-3">
       <h2>Chess Masnou Tournament</h2>
       <div class="d-flex justify-content-center gap-2 mt-2">
-        <b-button @click="tournamentStore.startPairing" v-if="tournamentStore.status === 'idle'">Pair</b-button>
-        <b-button @click="tournamentStore.startTournament" v-if="tournamentStore.status === 'idle'">Start</b-button>
+        <b-button @click="tournamentStore.startPairing" v-if="tournamentStore.status === 'idle'">
+          <i class="bi bi-arrow-clockwise"></i> Pair
+        </b-button>
+        <b-button size="lg" variant="warning" @click="tournamentStore.startTournament" v-if="tournamentStore.status === 'paired'">
+          <i class="bi bi-play"></i> Start
+        </b-button>
       </div>
     </div>
     <Winners v-if="tournamentStore.status === 'finished'"/>
     <div v-else>
-      <div class="d-flex flex-column flex-md-row mt-4 text-center">
+      <div class="d-flex flex-column flex-md-row mt-2">
         <TournamentTimer/>
       </div>
-      <div class="d-flex flex-column flex-md-row mt-4 text-center">
-        <div class="col-md-4">
+      <div class="d-flex flex-column flex-md-row mt-4">
+        <div class="col-md-3 px-4">
           <PlayersList/>
           <AddPlayer/>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-7 px-4">
           <GameList/>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-2 px-4">
           <QueuePlayersList/>
         </div>
       </div>
@@ -37,6 +42,7 @@ import GameList from "./GamesTable.vue";
 import QueuePlayersList from "./QueuePlayersTable.vue";
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {BButton} from "bootstrap-vue-3";
+import SettingsModal from "./SettingsModal.vue";
 
 const tournamentStore = useTournamentStore();
 </script>

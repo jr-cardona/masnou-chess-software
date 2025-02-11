@@ -1,29 +1,38 @@
 <template>
-  <div class="mt-3">
-    <h5>👥 Players List</h5>
-    <pre>{{ playersStore.players }}</pre>
-    <b-table :items="playersStore.players" :fields="['name', 'points', 'elo', 'status', 'actions']" responsive>
+  <div class="mt-3" style="overflow-y: auto;">
+    <h5 class="text-center text-warning"><i class="bi bi-trophy p-2"></i> Scoreboard</h5>
+    <b-table :items="playersStore.players"
+             :fields="['name', 'elo', {key:'points', class:'text-center'}, {key:'actions', label: '', class:'text-center'}]"
+             responsive
+             striped
+             hover
+             class="custom-table"
+             style="max-height: 750px"
+    >
       <template #cell(actions)="data">
         <b-button
-            v-if="tournamentStore.status !== 'inCourse'"
+            title="Remove player"
+            v-if="tournamentStore.status === 'idle'"
             variant="danger"
             size="sm"
             @click="playersStore.removePlayer(data.item.name)">
-          Delete
+          <i class="bi bi-trash"></i>
         </b-button>
         <b-button
+            title="Pause player"
             v-else-if="data.item.status === 'active'"
             variant="warning"
             size="sm"
             @click="playersStore.pausePlayer(data.item.name)">
-          Pause
+          <i class="bi bi-pause"></i>
         </b-button>
         <b-button
+            title="Resume player"
             v-else
             variant="success"
             size="sm"
             @click="playersStore.resumePlayer(data.item.name)">
-          Resume
+          <i class="bi bi-play"></i>
         </b-button>
       </template>
     </b-table>

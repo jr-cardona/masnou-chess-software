@@ -27,6 +27,7 @@ export const useTournamentStore = defineStore('tournamentStore', {
                 player => !queueStore.queue.includes(player.name)
             );
             this.assignGames(gamesStore, playersNotInQueue);
+            this.status = 'paired';
         },
 
         calculateInitialQueue(queueStore, playersStore, totalPlayers) {
@@ -53,7 +54,7 @@ export const useTournamentStore = defineStore('tournamentStore', {
         },
 
         startTournament() {
-            if (this.status !== 'idle') return;
+            if (this.status !== 'paired') return;
             this.status = 'inCourse';
         },
 
