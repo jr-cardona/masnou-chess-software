@@ -1,6 +1,7 @@
 import {app, BrowserWindow} from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
+import { createAppMenu } from './menu.js';
 
 if (started) {
     app.quit();
@@ -8,15 +9,17 @@ if (started) {
 
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
-        show: false,
+        width: 1920,
+        height: 1080,
+        minWidth: 1920,
+        minHeight: 1080,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-        },
+            contextIsolation: true,
+            enableRemoteModule: false,
+            nodeIntegration: false
+        }
     });
-    mainWindow.maximize();
-    mainWindow.once('ready-to-show', () => {
-        mainWindow.show()
-    })
 
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
@@ -27,6 +30,7 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
     createWindow();
+    createAppMenu();
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
             createWindow();

@@ -1,17 +1,15 @@
 <template>
   <div class='container-full'>
     <SettingsModal></SettingsModal>
-    <div class="text-center mt-3">
-      <h2>{{ settingsStore.settings.tournamentName }}</h2>
-      <div class="d-flex justify-content-center gap-2 mt-2">
-        <b-button size="lg" @click="tournamentStore.startPairing" v-if="tournamentStore.status === 'idle'">
-          <i class="bi bi-arrow-clockwise"></i> Pair
-        </b-button>
-        <b-button size="lg" variant="warning" @click="tournamentStore.startTournament" v-if="tournamentStore.status === 'paired'">
-          <i class="bi bi-play"></i> Start
-        </b-button>
-        <b-button size="lg" variant="secondary" @click="settingsStore.showModal = true">⚙️ Settings</b-button>
-      </div>
+    <div class="d-flex align-items-center justify-content-center mt-3">
+      <h2 class="me-3">{{ settingsStore.settings.tournamentName }}</h2>
+      <b-button size="lg"
+                variant="warning"
+                @click="tournamentStore.startTournament"
+                v-if="tournamentStore.status === 'paired'"
+      >
+        <i class="bi bi-play"></i> Start
+      </b-button>
     </div>
     <Winners v-if="tournamentStore.status === 'finished'"/>
     <div v-else>
@@ -39,13 +37,26 @@ import TournamentTimer from '../Components/TournamentTimer.vue';
 import Winners from '../Components/Winners.vue';
 import AddPlayer from '../Components/AddPlayer.vue';
 import PlayersList from './PlayersTable.vue';
-import GameList from "./GamesTable.vue";
-import QueuePlayersList from "./QueuePlayersTable.vue";
-import SettingsModal from "./SettingsModal.vue";
-import {BButton} from "bootstrap-vue-3";
+import GameList from './GamesTable.vue';
+import QueuePlayersList from './QueuePlayersTable.vue';
+import SettingsModal from './SettingsModal.vue';
+import {BButton} from 'bootstrap-vue-3';
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {useSettingsStore} from '../stores/useSettingsStore';
+import {onMounted} from 'vue';
+import {useHistoryStore} from "../stores/useHistoryStore";
 
 const tournamentStore = useTournamentStore();
 const settingsStore = useSettingsStore();
+const historyStore = useHistoryStore();
+
+onMounted(() => {
+  window.electron.ipcRenderer.on('open-settings', () => {
+    settingsStore.showModal = true;
+  });
+
+  window.electron.ipcRenderer.on('perform-undo', () => {
+    historyStore.undo();
+  });
+});
 </script>

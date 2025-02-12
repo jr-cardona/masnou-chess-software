@@ -33,11 +33,12 @@ export const useHistoryStore = defineStore('historyStore', {
             const playersStore = usePlayersStore();
             const queueStore = useQueueStore();
             const gamesStore = useGamesStore();
+            const tournamentStore = useTournamentStore();
 
             playersStore.players = prevState.players;
             queueStore.queue = prevState.queue;
             gamesStore.activeGames = prevState.activeGames;
-            gamesStore.status = prevState.status;
+            tournamentStore.status = prevState.status;
         },
     }
 });
