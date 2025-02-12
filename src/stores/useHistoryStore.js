@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia';
-import { usePlayersStore } from './usePlayersStore';
-import { useQueueStore } from './useQueueStore';
-import { useGamesStore } from './useGamesStore';
+import {defineStore} from 'pinia';
+import {usePlayersStore} from './usePlayersStore';
+import {useQueueStore} from './useQueueStore';
+import {useGamesStore} from './useGamesStore';
 import {useTournamentStore} from "./useTournamentStore";
 
 export const useHistoryStore = defineStore('historyStore', {
@@ -9,7 +9,7 @@ export const useHistoryStore = defineStore('historyStore', {
         history: []
     }),
     actions: {
-        saveState() {
+        saveState(extra = {}) {
             const playersStore = usePlayersStore();
             const queueStore = useQueueStore();
             const gamesStore = useGamesStore();
@@ -19,7 +19,8 @@ export const useHistoryStore = defineStore('historyStore', {
                 players: JSON.parse(JSON.stringify(playersStore.players)),
                 queue: JSON.parse(JSON.stringify(queueStore.queue)),
                 activeGames: JSON.parse(JSON.stringify(gamesStore.activeGames)),
-                status: tournamentStore.status
+                status: tournamentStore.status,
+                ...extra
             };
 
             this.history.push(stateSnapshot);
@@ -39,6 +40,9 @@ export const useHistoryStore = defineStore('historyStore', {
             queueStore.queue = prevState.queue;
             gamesStore.activeGames = prevState.activeGames;
             tournamentStore.status = prevState.status;
+            if (prevState.timer !== undefined) {
+                tournamentStore.timer = prevState.timer;
+            }
         },
     }
 });

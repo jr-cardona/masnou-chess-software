@@ -48,6 +48,7 @@ const messages = {
         higherScoreSitsOut: "Jugador con mayor puntuación se retira",
         bothSitOut: "Ambos se retiran",
         back: "Atrás",
+        noMatchesAvailable: "No hay juegos en curso",
     }
 };
 

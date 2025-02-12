@@ -55,6 +55,7 @@ export const useTournamentStore = defineStore('tournamentStore', {
 
         startTournament() {
             if (this.status !== 'paired') return;
+            useHistoryStore().saveState({timer: this.timer});
             this.status = 'inCourse';
         },
 
