@@ -1,26 +1,33 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 
 export const useSettingsStore = defineStore('settings', {
     state: () => ({
-        language: '',
-        tournamentName: '',
-        initialPairing: '',
-        queueOrder: '',
-        winnerStays: '',
-        maxWins: '',
-        drawRule: '',
-        maxBoards: null
+        settings: {
+            language: 'en',
+            tournamentName: '',
+            maxBoards: '',
+            initialPairing: 'random',
+            queueOrder: 'random',
+            winnerColor: 'chooses',
+            maxWins: 'unlimited',
+            drawScenario: 'whiteOut',
+        },
+        showModal: false,
     }),
     actions: {
-        setSettings(newSettings) {
-            this.$patch(newSettings);
-            localStorage.setItem('tournamentSettings', JSON.stringify(newSettings));
+        setSettings() {
+            localStorage.setItem('tournament.settings', JSON.stringify(this.settings));
+            this.showModal = false;
         },
         loadSettings() {
-            const savedSettings = localStorage.getItem('tournamentSettings');
+            const savedSettings = JSON.parse(localStorage.getItem('tournament.settings'));
             if (savedSettings) {
-                this.$patch(JSON.parse(savedSettings));
+                this.settings = {...this.settings, ...savedSettings};
             }
+        },
+        resetSettings() {
+            this.$reset();
+            localStorage.removeItem('tournament.settings');
         }
-    }
+    },
 });

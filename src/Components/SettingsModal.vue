@@ -1,9 +1,9 @@
 <template>
-  <b-modal v-model="showModal"
+  <b-modal v-model="settingsStore.showModal"
            size="md"
            body-bg-variant="dark"
            header-bg-variant="dark"
-           title="Tournament Settings"
+           :title="t('tournamentSettings')"
            centered
            hide-footer
            no-close-on-esc
@@ -11,77 +11,105 @@
            no-close-on-backdrop
   >
     <div v-if="step === 1">
-      <h5 class="text-light">Step 1: Please select a language</h5>
-      <b-form-group label="Language:" class="text-light">
-        <b-form-select v-model="settings.language" :options="languages"/>
-      </b-form-group>
-      <b-button variant="warning" :disabled="!settings.language" @click="step++" class="w-100">Next</b-button>
+      <h5 class="text-light">{{ t('selectLanguage') }}</h5>
+      <b-form-select v-model="settingsStore.settings.language" :options="languages" class="my-3"/>
+      <b-button variant="warning" :disabled="!settingsStore.settings.language" @click="step++" class="w-100">{{
+          t('next')
+        }}
+      </b-button>
     </div>
     <div v-else>
-      <h5 class="text-light">Step 2: Rules</h5>
-      <b-form-group label="Tournament Name:" class="text-light">
-        <b-form-input v-model="settings.tournamentName" required/>
+      <h5 class="text-light">{{ t('generalSettings') }}</h5>
+      <b-form-group :label="t('tournamentName')" class="text-light">
+        <b-form-input v-model="settingsStore.settings.tournamentName" required/>
       </b-form-group>
-      <b-form-group label="Max Physical Boards:" class="text-light">
-        <b-form-input type="number" v-model="settings.maxBoards" min="1" required/>
+      <b-form-group :label="t('maxBoards')" class="text-light">
+        <b-form-input type="number" v-model="settingsStore.settings.maxBoards" min="1" required/>
       </b-form-group>
-      <b-form-group label="Initial Pairing:" class="text-light">
-        <b-form-select v-model="settings.initialPairing" :options="pairingOptions"/>
+      <b-form-group :label="t('initialPairing')" class="text-light">
+        <b-form-select v-model="settingsStore.settings.initialPairing" :options="pairingOptions"/>
       </b-form-group>
-      <b-form-group label="Initial Queue Order:" class="text-light">
-        <b-form-select v-model="settings.queueOrder" :options="queueOptions"/>
+      <b-form-group :label="t('initialQueueOrder')" class="text-light">
+        <b-form-select v-model="settingsStore.settings.queueOrder" :options="queueOptions"/>
       </b-form-group>
-      <b-form-group label="Winner's Next Color:" class="text-light">
-        <b-form-select v-model="settings.winnerColor" :options="winnerColorOptions"/>
+      <b-form-group :label="t('winnerColor')" class="text-light">
+        <b-form-select v-model="settingsStore.settings.winnerColor" :options="winnerOptions"/>
       </b-form-group>
-      <b-form-group label="Max Consecutive Wins Before Queue:" class="text-light">
-        <b-form-select v-model="settings.maxWinsBeforeQueue" :options="winOptions"/>
+      <b-form-group :label="t('maxWins')" class="text-light">
+        <b-form-select v-model="settingsStore.settings.maxWins" :options="winLimitOptions"/>
       </b-form-group>
-      <b-form-group label="Draw Outcome:" class="text-light">
-        <b-form-select v-model="settings.drawOutcome" :options="drawOptions"/>
+      <b-form-group :label="t('drawScenario')" class="text-light">
+        <b-form-select v-model="settingsStore.settings.drawScenario" :options="drawOptions"/>
       </b-form-group>
-      <b-button variant="warning" :disabled="!isFormValid" @click="saveSettings" class="w-100">Finish</b-button>
+      <div class="justify-content-between d-flex">
+        <b-button variant="secondary" @click="step = 1" class="w-25"><i class="bi bi-arrow-left"></i> {{ t('back') }}
+        </b-button>
+        <b-button variant="warning" :disabled="!isFormValid" @click="saveSettings" class="w-25">{{
+            t('finish')
+          }}
+        </b-button>
+      </div>
     </div>
   </b-modal>
 </template>
 
 <script setup>
-import {ref, onMounted, computed} from 'vue';
+import {ref, onMounted, watch, computed} from 'vue';
+import {useI18n} from 'vue-i18n';
 import {useSettingsStore} from '../stores/useSettingsStore';
 import {BModal, BButton, BFormGroup, BFormSelect, BFormInput} from 'bootstrap-vue-3';
 
+const {t, locale} = useI18n({useScope: 'global'})
 const settingsStore = useSettingsStore();
-const showModal = ref(true);
 const step = ref(1);
-const settings = ref({
-  language: 'English',
-  tournamentName: '',
-  maxBoards: 10,
-  initialPairing: 'Random',
-  queueOrder: 'Random',
-  winnerColor: 'Winner Chooses',
-  maxWinsBeforeQueue: 'Indefinite',
-  drawOutcome: 'White',
-});
 
-const languages = ['English', 'Español'];
-const pairingOptions = ['Random', 'By ELO'];
-const queueOptions = ['Random', 'By ELO'];
-const winnerColorOptions = ['Repeat Pieces', 'Switch Color', 'Winner Chooses'];
-const winOptions = ['Indefinite', '3', '4', '5'];
-const drawOptions = ['White', 'Higher Points', 'Both'];
+const languages = [
+  {value: 'en', text: 'English'},
+  {value: 'es', text: 'Español'},
+];
+const pairingOptions = [
+  {value: 'random', text: t('random')},
+  {value: 'elo', text: t('byELO')},
+];
+const queueOptions = pairingOptions;
+const winnerOptions = [
+  {value: 'repeats', text: t('repeatsColor')},
+  {value: 'changes', text: t('changesColor')},
+  {value: 'chooses', text: t('chooses')},
+];
+const winLimitOptions = [
+  {value: 'unlimited', text: t('unlimited')},
+  {value: '3', text: '3'},
+  {value: '4', text: '4'},
+  {value: '5', text: '5'},
+  {value: '6', text: '6'},
+];
+const drawOptions = [
+  {value: 'whiteOut', text: t('whiteSitsOut')},
+  {value: 'higherOut', text: t('higherScoreSitsOut')},
+  {value: 'bothOut', text: t('bothSitOut')},
+];
 
 const isFormValid = computed(() => {
-  return Object.values(settings.value).every(val => val !== '' && val !== null);
+  return Object.values(settingsStore.settings).every(val => val !== '' && val !== null);
 });
 
 const saveSettings = () => {
-  settingsStore.setSettings(settings.value);
-  showModal.value = false;
+  if (isFormValid) {
+    settingsStore.setSettings();
+  }
 };
+
+watch(() => settingsStore.settings.language, (newLang) => {
+  locale.value = newLang;
+  localStorage.setItem('language', newLang);
+});
 
 onMounted(() => {
   settingsStore.loadSettings();
-  showModal.value = true;
+  locale.value = settingsStore.settings.language;
+  if (!isFormValid.value) {
+    settingsStore.showModal = true;
+  }
 });
 </script>
