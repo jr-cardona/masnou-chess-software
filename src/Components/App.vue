@@ -8,7 +8,7 @@
                 @click="tournamentStore.startTournament"
                 v-if="tournamentStore.status === 'paired'"
       >
-        <i class="bi bi-play"></i> Start
+        <i class="bi bi-play"></i> {{ t('start') }}
       </b-button>
     </div>
     <Winners v-if="tournamentStore.status === 'finished'"/>
@@ -17,14 +17,14 @@
         <TournamentTimer/>
       </div>
       <div class="d-flex flex-column flex-md-row mt-4">
+        <div class="col-md-2 px-4">
+          <AddPlayer/>
+        </div>
         <div class="col-md-3 px-4">
           <PlayersList/>
-          <AddPlayer/>
         </div>
         <div class="col-md-7 px-4">
           <GameList/>
-        </div>
-        <div class="col-md-2 px-4">
           <QueuePlayersList/>
         </div>
       </div>
@@ -43,9 +43,11 @@ import SettingsModal from './SettingsModal.vue';
 import {BButton} from 'bootstrap-vue-3';
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {useSettingsStore} from '../stores/useSettingsStore';
-import {onMounted} from 'vue';
 import {useHistoryStore} from "../stores/useHistoryStore";
+import {useI18n} from "vue-i18n";
+import {onMounted} from 'vue';
 
+const {t} = useI18n({useScope: 'global'})
 const tournamentStore = useTournamentStore();
 const settingsStore = useSettingsStore();
 const historyStore = useHistoryStore();
