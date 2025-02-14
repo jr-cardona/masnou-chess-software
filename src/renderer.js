@@ -3,6 +3,7 @@
  */
 
 import './index.css';
+import './fonts.css';
 import {createApp} from 'vue';
 import {createPinia} from 'pinia';
 import App from './Components/App.vue';

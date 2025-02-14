@@ -7,14 +7,6 @@ body {
     color: #E0E0E0 !important;
 }
 
-.open-sans {
-    font-family: "Open Sans", serif;
-    font-optical-sizing: auto;
-    font-weight: 12;
-    font-style: normal;
-    font-variation-settings: "wdth" 100;
-}
-
 :root {
     --bs-body-bg: #121212;
     --bs-body-color: #E0E0E0;
@@ -30,6 +22,8 @@ body {
 
     --bs-secondary: #4A90E2 !important;
     --bs-secondary-rgb: 74, 144, 226 !important;
+
+    --bs-font-sans-serif: 'Roboto', sans-serif !important;
 }
 
 
