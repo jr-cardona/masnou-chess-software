@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia';
 import {useQueueStore} from './useQueueStore';
 import {useHistoryStore} from './useHistoryStore';
+import {useTournamentStore} from './useTournamentStore';
 
 export const usePlayersStore = defineStore('playersStore', {
     state: () => ({
@@ -14,7 +15,7 @@ export const usePlayersStore = defineStore('playersStore', {
             useHistoryStore().saveState();
             this.players.push({name, points: 0, elo, status: 'active'});
             this.players.sort((a, b) => b.points - a.points || b.elo - a.elo);
-            if (startInQueue) {
+            if (useTournamentStore().status === 'inCourse' || startInQueue) {
                 const queueStore = useQueueStore();
                 queueStore.enqueue(name);
             }

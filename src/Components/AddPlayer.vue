@@ -35,10 +35,9 @@
           </div>
         </div>
 
-        <b-form-group :label="t('startInQueue')">
+        <b-form-group :label="t('startInQueue')" v-if="tournamentStore.status !== 'inCourse'">
           <b-form-checkbox
               v-model="startInQueue"
-              :disabled="tournamentStore.status === 'inCourse'"
               class="text-warning"
           >
             {{ t('yes') }}
@@ -56,10 +55,10 @@
 
 <script setup>
 import {nextTick, ref} from 'vue';
+import {useI18n} from 'vue-i18n';
 import {usePlayersStore} from '../stores/usePlayersStore';
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {BForm, BFormInput, BButton, BFormCheckbox} from 'bootstrap-vue-3';
-import {useI18n} from "vue-i18n";
 
 const {t} = useI18n({useScope: 'global'})
 const playersStore = usePlayersStore();

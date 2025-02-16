@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia';
-import {usePlayersStore} from "./usePlayersStore";
-import {useQueueStore} from "./useQueueStore";
-import {useGamesStore} from "./useGamesStore";
-import {useHistoryStore} from "./useHistoryStore";
+import {usePlayersStore} from './usePlayersStore';
+import {useQueueStore} from './useQueueStore';
+import {useGamesStore} from './useGamesStore';
+import {useHistoryStore} from './useHistoryStore';
 
 export const useTournamentStore = defineStore('tournamentStore', {
     state: () => ({
@@ -13,7 +13,6 @@ export const useTournamentStore = defineStore('tournamentStore', {
         startPairing() {
             const playersStore = usePlayersStore();
             const queueStore = useQueueStore();
-            const gamesStore = useGamesStore();
             const totalPlayers = playersStore.players.length;
 
             if (totalPlayers < 3 || this.status === 'inCourse') {
@@ -26,7 +25,7 @@ export const useTournamentStore = defineStore('tournamentStore', {
             const playersNotInQueue = playersStore.players.filter(
                 player => !queueStore.queue.includes(player.name)
             );
-            this.assignGames(gamesStore, playersNotInQueue);
+            this.assignGames(playersNotInQueue);
             this.status = 'paired';
         },
 
@@ -41,7 +40,8 @@ export const useTournamentStore = defineStore('tournamentStore', {
             }
         },
 
-        assignGames(gamesStore, playersNotInQueue) {
+        assignGames(playersNotInQueue) {
+            const gamesStore = useGamesStore();
             const midIndex = Math.ceil(playersNotInQueue.length / 2);
             const firstHalf = playersNotInQueue.slice(0, midIndex);
             const secondHalf = playersNotInQueue.slice(midIndex);
