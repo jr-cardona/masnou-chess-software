@@ -1,14 +1,28 @@
 <template>
   <div class='container-full'>
     <SettingsModal></SettingsModal>
-    <div class="d-flex align-items-center justify-content-center mt-3">
-      <h2 class="me-3">{{ settingsStore.settings.tournamentName }}</h2>
+    <div class="d-flex align-items-center justify-content-center">
+      <h1 class="me-3">{{ settingsStore.settings.tournamentName }}</h1>
       <b-button size="lg"
                 variant="warning"
-                @click="tournamentStore.startTournament"
                 v-if="tournamentStore.status === 'paired'"
+                @click="tournamentStore.startTournament"
       >
         <i class="bi bi-play"></i> {{ t('start') }}
+      </b-button>
+      <b-button size="lg"
+                variant="secondary"
+                v-if="tournamentStore.status === 'inCourse' && tournamentStore.timer > 0"
+                @click="tournamentStore.pauseTournament"
+      >
+        <i class="bi bi-pause"></i> {{ t('pause') }}
+      </b-button>
+      <b-button size="lg"
+                variant="success"
+                v-if="tournamentStore.status === 'stopped'"
+                @click="tournamentStore.resumeTournament"
+      >
+        <i class="bi bi-play"></i> {{ t('resume') }}
       </b-button>
     </div>
     <Winners v-if="tournamentStore.status === 'finished'"/>
@@ -17,15 +31,15 @@
         <TournamentTimer/>
       </div>
       <div class="d-flex flex-column flex-md-row mt-4">
-        <div class="col-md-2 px-4">
+        <div class="col-md-3 px-4">
           <AddPlayer/>
+        </div>
+        <div class="col-md-6 px-4">
+          <GameList/>
+          <QueuePlayersList/>
         </div>
         <div class="col-md-3 px-4">
           <PlayersList/>
-        </div>
-        <div class="col-md-7 px-4">
-          <GameList/>
-          <QueuePlayersList/>
         </div>
       </div>
     </div>
@@ -54,7 +68,9 @@ const historyStore = useHistoryStore();
 
 onMounted(() => {
   window.electron.ipcRenderer.on('open-settings', () => {
-    settingsStore.showModal = true;
+    if (tournamentStore.status === 'idle') {
+      settingsStore.showModal = true;
+    }
   });
 
   window.electron.ipcRenderer.on('perform-undo', () => {

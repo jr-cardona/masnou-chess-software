@@ -11,42 +11,69 @@
            no-close-on-backdrop
   >
     <div v-if="step === 1">
-      <h5 class="text-light">{{ t('selectLanguage') }}</h5>
-      <b-form-select v-model="settingsStore.settings.language" :options="languages" class="my-3"/>
-      <b-button variant="warning" :disabled="!settingsStore.settings.language" @click="step++" class="w-100">{{
+      <h5>{{ t('selectLanguage') }}</h5>
+      <b-form-select v-model="language" :options="languages" class="my-3" @input="setLanguage"/>
+      <b-button variant="warning" :disabled="!language" @click="step++" class="w-100">{{
           t('next')
         }}
       </b-button>
     </div>
     <div v-else>
-      <h5 class="text-light">{{ t('generalSettings') }}</h5>
-      <b-form-group :label="t('tournamentName')" class="text-light">
+      <b-form-group :label="t('tournamentName')">
         <b-form-input v-model="settingsStore.settings.tournamentName" required/>
       </b-form-group>
-      <b-form-group :label="t('maxBoards')" class="text-light">
+      <b-form-group :label="t('maxBoards')">
         <b-form-input type="number" v-model="settingsStore.settings.maxBoards" min="1" required/>
       </b-form-group>
-      <b-form-group :label="t('initialPairing')" class="text-light">
+      <b-form-group :label="t('tournamentDuration')">
+        <div class="d-flex align-items-center">
+          <b-input-group class="w-auto">
+            <b-form-input v-model.number="settingsStore.settings.hours"
+                          class="text-center time-field"
+                          @blur="validateHours"
+            />
+            <b-input-group-text>h</b-input-group-text>
+          </b-input-group>
+          <span class="mx-2">:</span>
+          <b-input-group class="w-auto">
+            <b-form-input v-model.number="settingsStore.settings.minutes"
+                          class="text-center time-field"
+                          @blur="validateMinutes"
+            />
+            <b-input-group-text>m</b-input-group-text>
+          </b-input-group>
+          <span class="mx-2">:</span>
+          <b-input-group class="w-auto">
+            <b-form-input v-model.number="settingsStore.settings.seconds"
+                          class="text-center time-field"
+                          @blur="validateSecs"
+            />
+            <b-input-group-text>s</b-input-group-text>
+          </b-input-group>
+        </div>
+        <div v-if="timeError" class="invalid-feedback d-block">{{ timeError }}</div>
+      </b-form-group>
+      <b-form-group :label="t('initialPairing')">
         <b-form-select v-model="settingsStore.settings.initialPairing" :options="pairingOptions"/>
       </b-form-group>
-      <b-form-group :label="t('initialQueueOrder')" class="text-light">
+      <b-form-group :label="t('initialQueueOrder')">
         <b-form-select v-model="settingsStore.settings.queueOrder" :options="queueOptions"/>
       </b-form-group>
-      <b-form-group :label="t('winnerColor')" class="text-light">
+      <b-form-group :label="t('winnerColor')">
         <b-form-select v-model="settingsStore.settings.winnerColor" :options="winnerOptions"/>
       </b-form-group>
-      <b-form-group :label="t('maxWins')" class="text-light">
+      <b-form-group :label="t('maxWins')">
         <b-form-select v-model="settingsStore.settings.maxWins" :options="winLimitOptions"/>
       </b-form-group>
-      <b-form-group :label="t('drawScenario')" class="text-light">
+      <b-form-group :label="t('drawScenario')">
         <b-form-select v-model="settingsStore.settings.drawScenario" :options="drawOptions"/>
       </b-form-group>
       <div class="justify-content-between d-flex">
-        <b-button variant="secondary" @click="step = 1" class="w-25"><i class="bi bi-arrow-left"></i> {{ t('back') }}
+        <b-button variant="secondary" @click="settingsStore.resetSettings" class="w-25"><i class="bi bi-arrow-counterclockwise"></i>
+          {{ t('reset') }}
         </b-button>
-        <b-button variant="warning" :disabled="!isFormValid" @click="saveSettings" class="w-25">{{
-            t('finish')
-          }}
+        <b-button variant="warning" :disabled="!isFormValid" @click="saveSettings" class="w-25"><i class="bi bi-floppy"></i>
+          {{ t('save') }}
         </b-button>
       </div>
     </div>
@@ -62,6 +89,8 @@ import {BModal, BButton, BFormGroup, BFormSelect, BFormInput} from 'bootstrap-vu
 const {t, locale} = useI18n({useScope: 'global'})
 const settingsStore = useSettingsStore();
 const step = ref(1);
+const timeError = ref('');
+const language = ref(localStorage.getItem('language'));
 
 const languages = [
   {value: 'en', text: 'English'},
@@ -73,9 +102,8 @@ const pairingOptions = [
 ];
 const queueOptions = pairingOptions;
 const winnerOptions = [
-  {value: 'repeats', text: t('repeatsColor')},
   {value: 'changes', text: t('changesColor')},
-  {value: 'chooses', text: t('chooses')},
+  {value: 'repeats', text: t('repeatsColor')},
 ];
 const winLimitOptions = [
   {value: 'unlimited', text: t('unlimited')},
@@ -95,21 +123,59 @@ const isFormValid = computed(() => {
 });
 
 const saveSettings = () => {
+  const timer = (settingsStore.settings.hours * 3600) + (settingsStore.settings.minutes * 60) + settingsStore.settings.seconds;
+  if (timer < 300) {
+    timeError.value = t('invalidTime');
+    return;
+  }
+  timeError.value = '';
   if (isFormValid) {
-    settingsStore.setSettings();
+    settingsStore.setSettings(timer);
   }
 };
 
-watch(() => settingsStore.settings.language, (newLang) => {
-  locale.value = newLang;
-  localStorage.setItem('language', newLang);
-});
+const validateHours = () => {
+  if (settingsStore.settings.hours === '' || isNaN(settingsStore.settings.hours)) {
+    settingsStore.settings.hours = 0;
+    return;
+  }
+  parseInt(settingsStore.settings.hours, 10);
+  settingsStore.settings.hours = Math.max(0, Math.min(99, settingsStore.settings.hours));
+};
+
+const validateMinutes = () => {
+  if (settingsStore.settings.minutes === '' || isNaN(settingsStore.settings.minutes)) {
+    settingsStore.settings.minutes = 0;
+    return;
+  }
+  parseInt(settingsStore.settings.minutes, 10);
+  settingsStore.settings.minutes = Math.max(0, Math.min(59, settingsStore.settings.minutes));
+};
+
+const validateSecs = () => {
+  if (settingsStore.settings.seconds === '' || isNaN(settingsStore.settings.seconds)) {
+    settingsStore.settings.seconds = 0;
+    return;
+  }
+  parseInt(settingsStore.settings.seconds, 10);
+  settingsStore.settings.seconds = Math.max(0, Math.min(59, settingsStore.settings.seconds));
+};
+
+const setLanguage = () => {
+  locale.value = language.value;
+  localStorage.setItem('language', language.value);
+};
 
 onMounted(() => {
   settingsStore.loadSettings();
-  locale.value = settingsStore.settings.language;
+  locale.value = language.value;
   if (!isFormValid.value) {
     settingsStore.showModal = true;
   }
 });
 </script>
+<style>
+.time-field {
+  max-width: 50px;
+}
+</style>

@@ -15,7 +15,8 @@ export const usePlayersStore = defineStore('playersStore', {
             useHistoryStore().saveState();
             this.players.push({name, points: 0, elo, status: 'active'});
             this.players.sort((a, b) => b.points - a.points || b.elo - a.elo);
-            if (useTournamentStore().status === 'inCourse' || startInQueue) {
+            const tournamentStore = useTournamentStore();
+            if (tournamentStore.status === 'inCourse' || tournamentStore.status === 'paired' || startInQueue) {
                 const queueStore = useQueueStore();
                 queueStore.enqueue(name);
             }
@@ -24,7 +25,8 @@ export const usePlayersStore = defineStore('playersStore', {
         removePlayer(name) {
             useHistoryStore().saveState();
             this.players = this.players.filter(player => player.name !== name);
-            useQueueStore().removeFromQueue(name);
+            const queueStore = useQueueStore();
+            queueStore.removeFromQueue(name);
         },
 
         pausePlayer(name) {

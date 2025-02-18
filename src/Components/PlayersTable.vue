@@ -21,7 +21,7 @@
         <b-button
             :title="t('pausePlayer')"
             v-else-if="data.item.status === 'active'"
-            variant="warning"
+            variant="secondary"
             size="sm"
             @click="playersStore.pausePlayer(data.item.name)">
           <i class="bi bi-pause"></i>

@@ -1,22 +1,29 @@
 import {defineStore} from 'pinia';
+import {useTournamentStore} from './useTournamentStore';
 
 export const useSettingsStore = defineStore('settings', {
     state: () => ({
         settings: {
-            language: 'en',
             tournamentName: '',
             maxBoards: '',
             initialPairing: 'random',
             queueOrder: 'random',
-            winnerColor: 'chooses',
+            winnerColor: 'changes',
             maxWins: 'unlimited',
             drawScenario: 'whiteOut',
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
         },
-        showModal: false,
+        showModal: true,
     }),
     actions: {
-        setSettings() {
-            localStorage.setItem('tournament.settings', JSON.stringify(this.settings));
+        setSettings(timer) {
+            const tournamentStore = useTournamentStore();
+            if (tournamentStore.status === 'idle') {
+                localStorage.setItem('tournament.settings', JSON.stringify(this.settings));
+                tournamentStore.timer = timer;
+            }
             this.showModal = false;
         },
         loadSettings() {

@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center my-3 w-100 display-1">
+  <div v-if="tournamentStore.timer > 0" class="text-center my-3 w-100">
     <b-badge :variant="tournamentStore.timer <= 90 ? 'danger' : 'primary'" class="timer-badge w-50 p-3">
       {{ formattedTime }}
     </b-badge>
@@ -14,15 +14,21 @@ import {BBadge} from 'bootstrap-vue-3';
 const tournamentStore = useTournamentStore();
 
 const formattedTime = computed(() => {
-  const minutes = Math.floor(tournamentStore.timer / 60);
+  const hours = Math.floor(tournamentStore.timer / 3600);
+  const minutes = Math.floor((tournamentStore.timer % 3600) / 60);
   const seconds = tournamentStore.timer % 60;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+
+  return `${hours > 0 ? hours.toString().padStart(2, "0") + ":" : ""}${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 });
 
 onMounted(() => {
-  setInterval(() => {
-    if (tournamentStore.status === 'inCourse' && tournamentStore.timer > 0) {
-      tournamentStore.decreaseTimer();
+  const timerInterval = setInterval(() => {
+    if (tournamentStore.status === 'inCourse') {
+      if (tournamentStore.timer > 0) {
+        tournamentStore.timer--;
+      } else {
+        clearInterval(timerInterval);
+      }
     }
   }, 1000);
 });

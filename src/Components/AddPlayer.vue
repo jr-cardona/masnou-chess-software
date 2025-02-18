@@ -93,11 +93,11 @@ const validatePlayerElo = () => {
   }
 
   if (!Number.isInteger(playerElo.value) || playerElo.value < 0) {
-    playerEloError.value = 'ELO must be a positive integer';
+    playerEloError.value = t('eloTooLow');
     return false;
   }
   if (playerElo.value > 3000) {
-    playerEloError.value = 'ELO must be lower than 3000';
+    playerEloError.value = t('eloTooHigh');
     return false;
   }
   playerEloError.value = '';
@@ -105,11 +105,11 @@ const validatePlayerElo = () => {
 };
 const validatePlayerName = () => {
   if (!playerName.value.trim()) {
-    playerNameError.value = 'Player name is required';
+    playerNameError.value = t('playerNameRequired');
     return false;
   }
   if (playerName.value.length > 30) {
-    playerNameError.value = 'Maximum 30 characters allowed';
+    playerNameError.value = t('playerNameTooLong');
     return false;
   }
   playerNameError.value = '';

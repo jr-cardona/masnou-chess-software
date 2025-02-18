@@ -6,21 +6,20 @@ import {useHistoryStore} from './useHistoryStore';
 
 export const useTournamentStore = defineStore('tournamentStore', {
     state: () => ({
-        timer: 600,
+        timer: 0,
         status: 'idle',
     }),
     actions: {
         startPairing() {
             const playersStore = usePlayersStore();
-            const queueStore = useQueueStore();
             const totalPlayers = playersStore.players.length;
 
-            if (totalPlayers < 3 || this.status === 'inCourse') {
+            if (totalPlayers < 6 || this.status === 'inCourse') {
                 return;
             }
 
             useHistoryStore().saveState();
-
+            const queueStore = useQueueStore();
             this.calculateInitialQueue(queueStore, playersStore, totalPlayers)
             const playersNotInQueue = playersStore.players.filter(
                 player => !queueStore.queue.includes(player.name)
@@ -55,6 +54,18 @@ export const useTournamentStore = defineStore('tournamentStore', {
 
         startTournament() {
             if (this.status !== 'paired') return;
+            useHistoryStore().saveState({timer: this.timer});
+            this.status = 'inCourse';
+        },
+
+        pauseTournament() {
+            if (this.status !== 'inCourse') return;
+            useHistoryStore().saveState({timer: this.timer});
+            this.status = 'stopped';
+        },
+
+        resumeTournament() {
+            if (this.status !== 'stopped') return;
             useHistoryStore().saveState({timer: this.timer});
             this.status = 'inCourse';
         },

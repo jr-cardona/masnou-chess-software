@@ -27,27 +27,27 @@ export const useGamesStore = defineStore('gamesStore', {
         whiteWins(board, white, black) {
             const playersStore = usePlayersStore();
             playersStore.players.find(player => player.name === white).points += 1;
-            this.pair(board, white, black);
+            this.repair(board, white, black);
         },
 
         blackWins(board, white, black) {
             const playersStore = usePlayersStore();
             playersStore.players.find(player => player.name === black).points += 1;
-            this.pair(board, black, white);
+            this.repair(board, black, white);
         },
 
         draw(board, white, black) {
             const playersStore = usePlayersStore();
             playersStore.players.find(player => player.name === white).points += 0.5;
             playersStore.players.find(player => player.name === black).points += 0.5;
-            this.pair(board, black, white);
+            this.repair(board, black, white);
         },
 
-        pair(board, winner, loser) {
+        repair(board, winner, loser) {
             const playersStore = usePlayersStore()
             const queueStore = useQueueStore();
             const tournamentStore = useTournamentStore();
-            playersStore.players.sort((a, b) => b.points - a.points || b.elo - a.elo);
+            playersStore.players.sort((a, b) => b.points - a.points);
             if (tournamentStore.timer > 0) {
                 this.activeGames[board] = {white: winner, black: queueStore.dequeue()};
                 queueStore.enqueue(loser);

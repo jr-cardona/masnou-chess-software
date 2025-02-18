@@ -28,7 +28,7 @@
         </div>
       </template>
       <template #empty>
-        <h4 class="text-center my-4 fs-4">
+        <h4 class="text-center my-4 fw-normal">
           {{ t('noMatchesAvailable') }}
         </h4>
         <b-button
