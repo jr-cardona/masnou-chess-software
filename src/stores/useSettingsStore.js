@@ -6,35 +6,41 @@ export const useSettingsStore = defineStore('settings', {
         settings: {
             tournamentName: '',
             maxBoards: '',
-            initialPairing: 'random',
-            queueOrder: 'random',
             winnerColor: 'changes',
             maxWins: 'unlimited',
             drawScenario: 'whiteOut',
             hours: 0,
             minutes: 0,
-            seconds: 0,
         },
-        showModal: true,
+        showModal: false,
     }),
     actions: {
         setSettings(timer) {
             const tournamentStore = useTournamentStore();
             if (tournamentStore.status === 'idle') {
                 localStorage.setItem('tournament.settings', JSON.stringify(this.settings));
-                tournamentStore.timer = timer;
+                tournamentStore.timer = this.calculateSeconds();
             }
             this.showModal = false;
         },
+
         loadSettings() {
             const savedSettings = JSON.parse(localStorage.getItem('tournament.settings'));
+            const tournamentStore = useTournamentStore();
             if (savedSettings) {
                 this.settings = {...this.settings, ...savedSettings};
+                tournamentStore.timer = this.calculateSeconds();
             }
         },
+
         resetSettings() {
             this.$reset();
+            this.showModal = true;
             localStorage.removeItem('tournament.settings');
+        },
+
+        calculateSeconds() {
+            return (this.settings.hours * 3600) + (this.settings.minutes * 60);
         }
     },
 });

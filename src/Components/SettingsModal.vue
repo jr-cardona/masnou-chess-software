@@ -42,22 +42,8 @@
             />
             <b-input-group-text>m</b-input-group-text>
           </b-input-group>
-          <span class="mx-2">:</span>
-          <b-input-group class="w-auto">
-            <b-form-input v-model.number="settingsStore.settings.seconds"
-                          class="text-center time-field"
-                          @blur="validateSecs"
-            />
-            <b-input-group-text>s</b-input-group-text>
-          </b-input-group>
         </div>
         <div v-if="timeError" class="invalid-feedback d-block">{{ timeError }}</div>
-      </b-form-group>
-      <b-form-group :label="t('initialPairing')">
-        <b-form-select v-model="settingsStore.settings.initialPairing" :options="pairingOptions"/>
-      </b-form-group>
-      <b-form-group :label="t('initialQueueOrder')">
-        <b-form-select v-model="settingsStore.settings.queueOrder" :options="queueOptions"/>
       </b-form-group>
       <b-form-group :label="t('winnerColor')">
         <b-form-select v-model="settingsStore.settings.winnerColor" :options="winnerOptions"/>
@@ -96,11 +82,6 @@ const languages = [
   {value: 'en', text: 'English'},
   {value: 'es', text: 'Español'},
 ];
-const pairingOptions = [
-  {value: 'random', text: t('random')},
-  {value: 'elo', text: t('byELO')},
-];
-const queueOptions = pairingOptions;
 const winnerOptions = [
   {value: 'changes', text: t('changesColor')},
   {value: 'repeats', text: t('repeatsColor')},
@@ -123,14 +104,13 @@ const isFormValid = computed(() => {
 });
 
 const saveSettings = () => {
-  const timer = (settingsStore.settings.hours * 3600) + (settingsStore.settings.minutes * 60) + settingsStore.settings.seconds;
-  if (timer < 300) {
+  if (!settingsStore.settings.hours > 0 && !settingsStore.settings.minutes < 5) {
     timeError.value = t('invalidTime');
     return;
   }
   timeError.value = '';
   if (isFormValid) {
-    settingsStore.setSettings(timer);
+    settingsStore.setSettings();
   }
 };
 
@@ -150,15 +130,6 @@ const validateMinutes = () => {
   }
   parseInt(settingsStore.settings.minutes, 10);
   settingsStore.settings.minutes = Math.max(0, Math.min(59, settingsStore.settings.minutes));
-};
-
-const validateSecs = () => {
-  if (settingsStore.settings.seconds === '' || isNaN(settingsStore.settings.seconds)) {
-    settingsStore.settings.seconds = 0;
-    return;
-  }
-  parseInt(settingsStore.settings.seconds, 10);
-  settingsStore.settings.seconds = Math.max(0, Math.min(59, settingsStore.settings.seconds));
 };
 
 const setLanguage = () => {

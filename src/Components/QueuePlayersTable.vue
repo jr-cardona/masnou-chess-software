@@ -4,7 +4,7 @@
       {{ t('queuePlayers') }}
     </h4>
     <ul class="list-group mt-3">
-      <li v-for="(player, index) in queueStore.queue" :key="player" class="list-group-item bg-dark text-light">
+      <li v-for="(player, index) in queueStore.queue" :key="player" class="list-group-item bg-dark text-light fs-4">
         <strong>#{{ index + 1 }}</strong> {{ player }} <span v-if="index === 0"><i class="bi bi-arrow-up"></i></span>
       </li>
     </ul>

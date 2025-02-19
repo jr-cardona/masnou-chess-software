@@ -4,7 +4,7 @@
     <b-table
         :items="gamesStore.activeGames"
         :fields=fields
-        class="custom-table large-text mt-3"
+        class="custom-table large-text mt-3 games-table"
         show-empty=""
         empty-text="asd"
     >
@@ -14,17 +14,17 @@
       <template #cell(result)="data" nowrap="nowrap">
         <div class="text-center">
           <b-button-group v-if="tournamentStore.status === 'inCourse'">
-            <b-button :title="t('whiteWins')" class="mx-1 text-nowrap fs-6" size="sm" variant="light" @click="gamesStore.processResult(data.index, 'white')">
+            <b-button :title="t('whiteWins')" class="mx-1" size="sm" variant="light" @click="gamesStore.processResult(data.index, 'white')">
               <WhiteKingIcon></WhiteKingIcon> 1 — 0
             </b-button>
-            <b-button :title="t('draw')" class="mx-1 text-nowrap fs-6" size="sm" variant="warning" @click="gamesStore.processResult(data.index, 'draw')">
+            <b-button :title="t('draw')" class="mx-1" size="sm" variant="warning" @click="gamesStore.processResult(data.index, 'draw')">
               <DrawIcon></DrawIcon> ½ — ½
             </b-button>
-            <b-button :title="t('blackWins')" class="mx-1 text-nowrap  fs-6" size="sm" variant="secondary" @click="gamesStore.processResult(data.index, 'black')">
+            <b-button :title="t('blackWins')" class="mx-1" size="sm" variant="secondary" @click="gamesStore.processResult(data.index, 'black')">
               <BlackKingIcon></BlackKingIcon> 0 — 1
             </b-button>
           </b-button-group>
-          <span v-else class="fw-bold fs-5 fst-italic">VS</span>
+          <span v-else class="fst-italic">VS</span>
         </div>
       </template>
       <template #empty>
@@ -59,9 +59,9 @@ const gamesStore = useGamesStore();
 const tournamentStore = useTournamentStore();
 const fields = [
   {key: 'board', label: t('board'), class: 'text-center small-col'},
-  {key: 'white', label: t('white')},
-  {key: 'result', label: '', class: 'text-center'},
-  {key: 'black', label: t('black'), class: 'text-end'},
+  {key: 'white', label: t('white'), class: 'w-25'},
+  {key: 'result', label: '', class: 'text-nowrap text-center'},
+  {key: 'black', label: t('black'), class: 'text-end w-25'},
 ];
 </script>
 <style>
