@@ -1,82 +1,107 @@
 <template>
   <b-modal v-model="settingsStore.showModal"
-           size="md"
+           size="lg"
            body-bg-variant="dark"
            header-bg-variant="dark"
-           :title="t('tournamentSettings')"
            centered
            hide-footer
            no-close-on-esc
            hide-header-close
            no-close-on-backdrop
   >
-    <div v-if="step === 1">
-      <h5>{{ t('selectLanguage') }}</h5>
-      <b-form-select v-model="language" :options="languages" class="my-3" @input="setLanguage"/>
-      <b-button variant="warning" :disabled="!language" @click="step++" class="w-100">{{
-          t('next')
-        }}
+    <template #title>
+      <i class="bi bi-trophy me-1"></i> {{ t('tournamentSettings') }}
+    </template>
+    <b-tabs pills vertical nav-wrapper-class="w-35">
+      <!-- Idioma -->
+      <b-tab>
+        <template #title>
+          <i class="bi bi-globe-americas me-1"></i> {{ t('language') }}
+        </template>
+        <b-form-group :label="t('selectLanguage')">
+          <b-form-select v-model="language" :options="languages" class="my-3" @input="setLanguage"/>
+        </b-form-group>
+      </b-tab>
+      <!-- Apariencia -->
+      <b-tab>
+        <template #title>
+          <i class="bi bi-brush"></i> {{ t('appearance') }}
+        </template>
+        <b-form-group :label="t('theme')">
+          <b-form-radio v-model="theme" value="dark">Oscuro</b-form-radio>
+          <b-form-radio v-model="theme" value="light">Claro</b-form-radio>
+        </b-form-group>
+      </b-tab>
+      <!-- Configuración del Torneo -->
+      <b-tab active>
+        <template #title>
+          <i class="bi bi-sliders me-1"></i> {{ t('generalSettings') }}
+        </template>
+        <b-form-group :label="t('tournamentName')">
+          <b-form-input v-model="settingsStore.settings.tournamentName" required/>
+        </b-form-group>
+
+        <b-form-group :label="t('maxBoards')">
+          <b-form-input type="number" v-model="settingsStore.settings.maxBoards" min="1" required/>
+        </b-form-group>
+
+        <b-form-group :label="t('tournamentDuration')">
+          <div class="d-flex align-items-center">
+            <b-input-group class="w-auto">
+              <b-form-input v-model.number="settingsStore.settings.hours"
+                            class="text-center time-field"
+                            @blur="validateHours"
+              />
+              <b-input-group-text>h</b-input-group-text>
+            </b-input-group>
+            <span class="mx-2">:</span>
+            <b-input-group class="w-auto">
+              <b-form-input v-model.number="settingsStore.settings.minutes"
+                            class="text-center time-field"
+                            @blur="validateMinutes"
+              />
+              <b-input-group-text>m</b-input-group-text>
+            </b-input-group>
+          </div>
+          <div v-if="timeError" class="invalid-feedback d-block">{{ timeError }}</div>
+        </b-form-group>
+
+        <b-form-group :label="t('winnerColor')">
+          <b-form-select v-model="settingsStore.settings.winnerColor" :options="winnerOptions"/>
+        </b-form-group>
+
+        <b-form-group :label="t('maxWins')">
+          <b-form-select v-model="settingsStore.settings.maxWins" :options="winLimitOptions"/>
+        </b-form-group>
+
+        <b-form-group :label="t('drawScenario')">
+          <b-form-select v-model="settingsStore.settings.drawScenario" :options="drawOptions"/>
+        </b-form-group>
+      </b-tab>
+    </b-tabs>
+    <!-- Botones de acción -->
+    <div class="justify-content-between d-flex mt-3">
+      <b-button variant="secondary" @click="settingsStore.resetSettings" class="w-25">
+        <i class="bi bi-arrow-counterclockwise"></i> {{ t('reset') }}
       </b-button>
-    </div>
-    <div v-else>
-      <b-form-group :label="t('tournamentName')">
-        <b-form-input v-model="settingsStore.settings.tournamentName" required/>
-      </b-form-group>
-      <b-form-group :label="t('maxBoards')">
-        <b-form-input type="number" v-model="settingsStore.settings.maxBoards" min="1" required/>
-      </b-form-group>
-      <b-form-group :label="t('tournamentDuration')">
-        <div class="d-flex align-items-center">
-          <b-input-group class="w-auto">
-            <b-form-input v-model.number="settingsStore.settings.hours"
-                          class="text-center time-field"
-                          @blur="validateHours"
-            />
-            <b-input-group-text>h</b-input-group-text>
-          </b-input-group>
-          <span class="mx-2">:</span>
-          <b-input-group class="w-auto">
-            <b-form-input v-model.number="settingsStore.settings.minutes"
-                          class="text-center time-field"
-                          @blur="validateMinutes"
-            />
-            <b-input-group-text>m</b-input-group-text>
-          </b-input-group>
-        </div>
-        <div v-if="timeError" class="invalid-feedback d-block">{{ timeError }}</div>
-      </b-form-group>
-      <b-form-group :label="t('winnerColor')">
-        <b-form-select v-model="settingsStore.settings.winnerColor" :options="winnerOptions"/>
-      </b-form-group>
-      <b-form-group :label="t('maxWins')">
-        <b-form-select v-model="settingsStore.settings.maxWins" :options="winLimitOptions"/>
-      </b-form-group>
-      <b-form-group :label="t('drawScenario')">
-        <b-form-select v-model="settingsStore.settings.drawScenario" :options="drawOptions"/>
-      </b-form-group>
-      <div class="justify-content-between d-flex">
-        <b-button variant="secondary" @click="settingsStore.resetSettings" class="w-25"><i class="bi bi-arrow-counterclockwise"></i>
-          {{ t('reset') }}
-        </b-button>
-        <b-button variant="warning" :disabled="!isFormValid" @click="saveSettings" class="w-25"><i class="bi bi-floppy"></i>
-          {{ t('save') }}
-        </b-button>
-      </div>
+      <b-button variant="warning" :disabled="!isFormValid" @click="saveSettings" class="w-25">
+        <i class="bi bi-floppy"></i> {{ t('save') }}
+      </b-button>
     </div>
   </b-modal>
 </template>
 
 <script setup>
-import {ref, onMounted, watch, computed} from 'vue';
+import {ref, onMounted, computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useSettingsStore} from '../stores/useSettingsStore';
-import {BModal, BButton, BFormGroup, BFormSelect, BFormInput} from 'bootstrap-vue-3';
+import {BModal, BButton, BFormGroup, BFormSelect, BFormInput, BTabs} from 'bootstrap-vue-3';
 
-const {t, locale} = useI18n({useScope: 'global'})
+const {t, locale} = useI18n({useScope: 'global'});
 const settingsStore = useSettingsStore();
-const step = ref(1);
 const timeError = ref('');
 const language = ref(localStorage.getItem('language'));
+const theme = ref('dark');
 
 const languages = [
   {value: 'en', text: 'English'},
@@ -104,14 +129,12 @@ const isFormValid = computed(() => {
 });
 
 const saveSettings = () => {
-  if (!settingsStore.settings.hours > 0 && !settingsStore.settings.minutes < 5) {
+  if (settingsStore.settings.hours === 0 && settingsStore.settings.minutes < 5) {
     timeError.value = t('invalidTime');
     return;
   }
   timeError.value = '';
-  if (isFormValid) {
-    settingsStore.setSettings();
-  }
+  settingsStore.setSettings();
 };
 
 const validateHours = () => {
@@ -119,8 +142,7 @@ const validateHours = () => {
     settingsStore.settings.hours = 0;
     return;
   }
-  parseInt(settingsStore.settings.hours, 10);
-  settingsStore.settings.hours = Math.max(0, Math.min(99, settingsStore.settings.hours));
+  settingsStore.settings.hours = Math.max(0, Math.min(99, parseInt(settingsStore.settings.hours, 10)));
 };
 
 const validateMinutes = () => {
@@ -128,8 +150,7 @@ const validateMinutes = () => {
     settingsStore.settings.minutes = 0;
     return;
   }
-  parseInt(settingsStore.settings.minutes, 10);
-  settingsStore.settings.minutes = Math.max(0, Math.min(59, settingsStore.settings.minutes));
+  settingsStore.settings.minutes = Math.max(0, Math.min(59, parseInt(settingsStore.settings.minutes, 10)));
 };
 
 const setLanguage = () => {

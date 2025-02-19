@@ -8,6 +8,7 @@ body {
 }
 
 :root {
+    --scheme: dark;
     --bs-body-bg: #121212;
     --bs-body-color: #E0E0E0;
 
@@ -24,6 +25,17 @@ body {
     --bs-secondary-rgb: 74, 144, 226 !important;
 
     --bs-font-sans-serif: 'Roboto', sans-serif !important;
+
+    --scrollbar-track: #363636;
+    --scrollbar-thumb: #e7e7e7;
+
+    --tab-active-color: #ffc107;
+    --tab-inactive-color: #e7e7e7;
+}
+
+:root[style*="--scheme: light"] {
+    --scrollbar-track: #e7e7e7;
+    --scrollbar-thumb: #363636;
 }
 
 .custom-table {
@@ -48,14 +60,74 @@ body {
     width: 10px;
 }
 
+.dark-mode {
+    --scrollbar-track: #363636;
+    --scrollbar-thumb: #e7e7e7;
+}
+
+.light-mode {
+    --scrollbar-track: #e7e7e7;
+    --scrollbar-thumb: #363636;
+}
+
 ::-webkit-scrollbar-track {
     border-radius: 8px;
-    background-color: #e7e7e7;
-    border: 1px solid #cacaca;
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    background-color: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
     border-radius: 8px;
-    background-color: #363636;
+    background-color: var(--scrollbar-thumb);
 }
+
+.nav-pills .nav-link {
+    width: 100%;
+    text-align: left;
+}
+
+.nav-pills .nav-item .nav-link {
+    color: var(--tab-inactive-color);
+    background-color: transparent;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-pills .nav-item .nav-link.active,
+.nav-pills .nav-item .nav-link.active:focus,
+.nav-pills .nav-item .nav-link.active:hover {
+    color: black !important;
+    background-color: var(--tab-active-color) !important;
+    font-weight: bold;
+}
+
+.nav-pills .nav-item .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-content {
+    min-height: 510px;
+    display: flex;
+    flex-direction: column;
+}
+
+.w-35 {
+    width: 35% !important;
+}
+
+.nav-pills .nav-item:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+}
+
+.nav-pills {
+    border-right: 2px solid rgba(255, 255, 255, 0.1);
+    padding-right: 15px;
+    margin-right: 15px;
+}
+
+

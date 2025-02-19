@@ -1,4 +1,4 @@
-import { createI18n } from 'vue-i18n';
+import {createI18n} from 'vue-i18n';
 
 const messages = {
     en: {
@@ -18,7 +18,7 @@ const messages = {
         queuePlayers: "Queue Players",
         tournamentSettings: "Tournament Settings",
         selectLanguage: "Select a language",
-        generalSettings: "Step 2: Rules and General Settings",
+        generalSettings: "Rules",
         maxBoards: "# Boards",
         tournamentName: "Tournament Name",
         initialPairing: "Initial Pairing",
@@ -57,7 +57,7 @@ const messages = {
         game: "Partida|Partidas",
         tournamentSettings: "Configuraciones del torneo",
         selectLanguage: "Seleccione un idioma",
-        generalSettings: "Paso 2: Reglas del torneo",
+        generalSettings: "Ajustes",
         maxBoards: "# Tableros",
         tournamentName: "Nombre del torneo",
         initialPairing: "Emparejamiento inicial",
@@ -95,7 +95,10 @@ const messages = {
         tournamentDuration: "Duración del torneo",
         invalidTime: "Duración del torneo debe ser de almenos 5 minutos",
         reset: "Restaurar",
+        appearance: "Apariencia",
+        language: "Idioma",
         playerNameRequired: "Nombre es requerido",
+        theme: "Tema",
     }
 };
 
