@@ -13,16 +13,35 @@
       <i class="bi bi-trophy me-1"></i> {{ t('tournamentSettings') }}
     </template>
     <b-tabs pills vertical nav-wrapper-class="w-35">
-      <!-- Idioma -->
+      <!-- Language -->
       <b-tab>
         <template #title>
           <i class="bi bi-globe-americas me-1"></i> {{ t('language') }}
         </template>
-        <b-form-group :label="t('selectLanguage')">
-          <b-form-select v-model="language" :options="languages" class="my-3" @input="setLanguage"/>
-        </b-form-group>
+        <div class="custom-dropdown" :class="{ open: isOpen }">
+          <button class="custom-dropdown-toggle" @click="isOpen = !isOpen">
+            <span>
+              <span class="flag">
+                <img :src="`/flags/${selectedLanguage.value}.svg`" width="30" :alt="selectedLanguage.text">
+              </span>
+              {{ selectedLanguage.text }}
+            </span>
+            <span>▼</span>
+          </button>
+          <div class="custom-dropdown-menu">
+            <div v-for="(lang, index) in languages" :key="lang.value">
+              <div @click="selectLanguage(lang)" class="custom-dropdown-item">
+                <span class="flag">
+                  <img :src="`/flags/${lang.value}.svg`" width="30" :alt="lang.text">
+                </span>
+                {{ lang.text }}
+              </div>
+              <div v-if="index < languages.length - 1" class="custom-dropdown-divider"></div>
+            </div>
+          </div>
+        </div>
       </b-tab>
-      <!-- Apariencia -->
+      <!-- Appearance -->
       <b-tab>
         <template #title>
           <i class="bi bi-brush"></i> {{ t('appearance') }}
@@ -32,7 +51,7 @@
           <b-form-radio v-model="theme" value="light">Claro</b-form-radio>
         </b-form-group>
       </b-tab>
-      <!-- Configuración del Torneo -->
+      <!-- Tournament Settings -->
       <b-tab active>
         <template #title>
           <i class="bi bi-sliders me-1"></i> {{ t('generalSettings') }}
@@ -100,12 +119,15 @@ import {BModal, BButton, BFormGroup, BFormSelect, BFormInput, BTabs} from 'boots
 const {t, locale} = useI18n({useScope: 'global'});
 const settingsStore = useSettingsStore();
 const timeError = ref('');
-const language = ref(localStorage.getItem('language'));
+const language = ref(localStorage.getItem('language') ?? 'us');
 const theme = ref('dark');
-
+const isOpen = ref(false);
+const selectedLanguage = ref({text: t('selectLanguage'), value: ''});
 const languages = [
-  {value: 'en', text: 'English'},
   {value: 'es', text: 'Español'},
+  {value: 'us', text: 'English'},
+  {value: 'pt', text: 'Português'},
+  {value: 'cn', text: '中文'},
 ];
 const winnerOptions = [
   {value: 'changes', text: t('changesColor')},
@@ -152,15 +174,17 @@ const validateMinutes = () => {
   }
   settingsStore.settings.minutes = Math.max(0, Math.min(59, parseInt(settingsStore.settings.minutes, 10)));
 };
-
-const setLanguage = () => {
-  locale.value = language.value;
-  localStorage.setItem('language', language.value);
+const selectLanguage = (lang) => {
+  selectedLanguage.value = lang;
+  isOpen.value = false;
+  locale.value = lang.value;
+  localStorage.setItem('language', lang.value);
 };
 
 onMounted(() => {
   settingsStore.loadSettings();
   locale.value = language.value;
+  selectedLanguage.value = languages.find(lang => lang.value === language.value);
   if (!isFormValid.value) {
     settingsStore.showModal = true;
   }
@@ -170,4 +194,73 @@ onMounted(() => {
 .time-field {
   max-width: 50px;
 }
+
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+  width: 240px;
+}
+
+.custom-dropdown-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  font-size: 16px;
+  background: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s;
+}
+
+.custom-dropdown-toggle:hover {
+  background: #f8f8f8;
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  display: none;
+}
+
+.custom-dropdown.open .custom-dropdown-menu {
+  display: block;
+}
+
+.custom-dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: #1E1E1E;
+}
+
+.custom-dropdown-item:hover {
+  background: #f0f0f0;
+}
+
+.flag {
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.custom-dropdown-divider {
+  width: 100%;
+  height: 1px;
+  background: #ddd;
+  margin: 8px 0;
+}
+
 </style>

@@ -1,7 +1,7 @@
 import {createI18n} from 'vue-i18n';
 
 const messages = {
-    en: {
+    us: {
         point: "Point|Points",
         board: "Board|Boards",
         white: "White",
@@ -12,6 +12,8 @@ const messages = {
         yes: "Yes",
         save: "Save",
         scoreboard: "Scoreboard",
+        language: "Language",
+        appearance: "Appearance",
         game: "Game|Games",
         noMatchesAvailable: "No matches available",
         startPairing: "Start Pairing",
@@ -105,7 +107,7 @@ const messages = {
 const i18n = createI18n({
     legacy: false,
     locale: localStorage.getItem('language'),
-    fallbackLocale: 'en',
+    fallbackLocale: 'us',
     messages
 });
 
