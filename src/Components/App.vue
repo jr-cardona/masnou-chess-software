@@ -25,22 +25,27 @@
         <i class="bi bi-play"></i> {{ t('resume') }}
       </b-button>
     </div>
-    <Winners v-if="tournamentStore.status === 'finished'"/>
-    <div v-else class="d-flex flex-column flex-md-row mt-2">
+    <div class="d-flex flex-column flex-md-row mt-2 position-relative">
       <div class="col-md-3 px-4">
         <AddPlayer/>
-        <QueuePlayers/>
       </div>
-
       <div class="col-md-6 d-flex flex-column align-items-center px-4">
         <div class="w-100">
           <TournamentTimer/>
-          <GameList/>
         </div>
       </div>
-
-      <div class="col-md-3 px-4 d-flex flex-column">
-        <PlayersList class="flex-grow-1"/>
+      <div class="col-md-3 px-4 d-flex flex-column position-absolute end-0">
+        <PlayersList class="flex-grow-1 overflow-auto"/>
+      </div>
+    </div>
+    <div class="d-flex flex-column flex-md-row mt-2">
+      <div class="col-md-3 px-4">
+        <QueuePlayers/>
+      </div>
+      <div class="col-md-6 d-flex flex-column align-items-center px-4">
+        <div class="w-100">
+          <GameList/>
+        </div>
       </div>
     </div>
   </div>
@@ -57,8 +62,8 @@ import SettingsModal from './SettingsModal.vue';
 import {BButton} from 'bootstrap-vue-3';
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {useSettingsStore} from '../stores/useSettingsStore';
-import {useHistoryStore} from "../stores/useHistoryStore";
-import {useI18n} from "vue-i18n";
+import {useHistoryStore} from '../stores/useHistoryStore';
+import {useI18n} from 'vue-i18n';
 import {onMounted} from 'vue';
 
 const {t} = useI18n({useScope: 'global'})

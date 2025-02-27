@@ -48,7 +48,7 @@ body {
 }
 
 .custom-table tbody td {
-    background-color: #222 !important;
+    background-color: rgba(33, 37, 41) !important;
     color: white;
 }
 

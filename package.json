@@ -37,6 +37,7 @@
     "bootstrap-vue-3": "^0.3.12",
     "electron-squirrel-startup": "^1.0.1",
     "pinia": "^2.3.1",
+    "sweetalert2": "^11.17.2",
     "vue": "^3.5.13",
     "vue-i18n": "^11.1.1"
   }

@@ -15,17 +15,21 @@ export const useTournamentStore = defineStore('tournamentStore', {
             const totalPlayers = playersStore.players.length;
 
             if (totalPlayers < 6 || this.status === 'inCourse') {
-                return;
+                return {success: false, reason: 'notEnoughPlayers'};
             }
 
             useHistoryStore().saveState();
             const queueStore = useQueueStore();
-            this.calculateInitialQueue(queueStore, playersStore, totalPlayers)
+            this.calculateInitialQueue(queueStore, playersStore, totalPlayers);
+
             const playersNotInQueue = playersStore.players.filter(
                 player => !queueStore.queue.includes(player.name)
             );
+
             this.assignGames(playersNotInQueue);
             this.status = 'paired';
+
+            return { success: true };
         },
 
         calculateInitialQueue(queueStore, playersStore, totalPlayers) {
