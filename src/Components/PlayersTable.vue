@@ -7,7 +7,7 @@
              striped
              hover
              class="custom-table mt-3"
-             style="max-height: 750px"
+             style="max-height: 1080px"
     >
       <template #cell(actions)="data">
         <b-button

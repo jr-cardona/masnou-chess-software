@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3">
+  <div class="mt-4">
     <h3 class="text-center text-warning"><i class="bi bi-puzzle p-2"></i>{{ t('game', 2) }}</h3>
     <b-table
         :items="gamesStore.activeGames"

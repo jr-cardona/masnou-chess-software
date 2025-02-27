@@ -26,21 +26,21 @@
       </b-button>
     </div>
     <Winners v-if="tournamentStore.status === 'finished'"/>
-    <div v-else>
-      <div class="d-flex flex-column flex-md-row mt-2">
-        <TournamentTimer/>
+    <div v-else class="d-flex flex-column flex-md-row mt-2">
+      <div class="col-md-3 px-4">
+        <AddPlayer/>
+        <QueuePlayers/>
       </div>
-      <div class="d-flex flex-column flex-md-row mt-4">
-        <div class="col-md-3 px-4">
-          <AddPlayer/>
-        </div>
-        <div class="col-md-6 px-4">
+
+      <div class="col-md-6 d-flex flex-column align-items-center px-4">
+        <div class="w-100">
+          <TournamentTimer/>
           <GameList/>
-          <QueuePlayersList/>
         </div>
-        <div class="col-md-3 px-4">
-          <PlayersList/>
-        </div>
+      </div>
+
+      <div class="col-md-3 px-4 d-flex flex-column">
+        <PlayersList class="flex-grow-1"/>
       </div>
     </div>
   </div>
@@ -52,7 +52,7 @@ import Winners from '../Components/Winners.vue';
 import AddPlayer from '../Components/AddPlayer.vue';
 import PlayersList from './PlayersTable.vue';
 import GameList from './GamesTable.vue';
-import QueuePlayersList from './QueuePlayersTable.vue';
+import QueuePlayers from './QueuePlayers.vue';
 import SettingsModal from './SettingsModal.vue';
 import {BButton} from 'bootstrap-vue-3';
 import {useTournamentStore} from '../stores/useTournamentStore';
