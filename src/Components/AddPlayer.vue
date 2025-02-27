@@ -3,49 +3,27 @@
     <h3 class="text-center text-warning"><i class="bi bi-person"></i>
       {{ t('addPlayer', 2) }}
     </h3>
-    <div class="card text-light p-4 rounded" style="background-color: #2A2A2A">
-      <b-form @submit.prevent="addNewPlayer">
+    <div class="card text-light p-4 rounded bg-dark">
+      <b-form @submit.prevent="addNewPlayers">
         <div class="form-floating mb-3">
-          <b-form-input
-              id="playerName"
+          <b-form-textarea
+              id="playerNames"
               placeholder=""
-              ref="playerNameInput"
-              v-model="playerName"
-              :class="{'is-invalid': playerNameError}"
-              @input="validatePlayerName"
-          ></b-form-input>
-          <label for="playerName" class="text-dark">{{ t('name') }} *</label>
-          <div v-if="playerNameError" class="invalid-feedback">
-            {{ playerNameError }}
+              ref="playerNamesInput"
+              v-model="playerNames"
+              :class="{'is-invalid': playerNamesError}"
+              class="h-100"
+              rows="6"
+              @input="validatePlayerNames"
+          ></b-form-textarea>
+          <label for="playerNames" class="text-dark">{{ t('enterPlayerNames') }} *</label>
+          <div v-if="playerNamesError" class="invalid-feedback">
+            {{ playerNamesError }}
           </div>
         </div>
 
-        <div class="form-floating mb-3">
-          <b-form-input
-              id="elo"
-              type="number"
-              placeholder=""
-              v-model.number="playerElo"
-              :class="{'is-invalid': playerEloError}"
-              @input="validatePlayerElo"
-          ></b-form-input>
-          <label for="playerName" class="text-dark">ELO ({{ t('optional') }})</label>
-          <div v-if="playerEloError " class="invalid-feedback">
-            {{ playerEloError }}
-          </div>
-        </div>
-
-        <b-form-group :label="t('startInQueue')" v-if="tournamentStore.status !== 'inCourse'">
-          <b-form-checkbox
-              v-model="startInQueue"
-              class="text-warning"
-          >
-            {{ t('yes') }}
-          </b-form-checkbox>
-        </b-form-group>
-
-        <b-button type="submit" variant="warning" class="w-100 fs-5 fw-medium"><i class="bi bi-floppy"></i>
-          {{ t('save') }}
+        <b-button type="submit" variant="warning" class="w-100 fs-5 fw-medium">
+          <i class="bi bi-floppy"></i> {{ t('save') }}
         </b-button>
       </b-form>
     </div>
@@ -54,65 +32,46 @@
 
 
 <script setup>
-import {nextTick, ref} from 'vue';
+import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {usePlayersStore} from '../stores/usePlayersStore';
-import {useTournamentStore} from '../stores/useTournamentStore';
-import {BForm, BFormInput, BButton, BFormCheckbox} from 'bootstrap-vue-3';
+import {BForm, BButton} from 'bootstrap-vue-3';
 
 const {t} = useI18n({useScope: 'global'})
 const playersStore = usePlayersStore();
-const tournamentStore = useTournamentStore();
-const playerNameInput = ref(null);
-const playerName = ref('');
-const playerNameError = ref('');
-const playerElo = ref(0);
-const playerEloError = ref('');
-const startInQueue = ref(false);
+const playerNames = ref('');
+const playerNamesError = ref('');
 
-const addNewPlayer = () => {
-  if (validateForm()) {
-    playersStore.addPlayer(playerName.value.trim(), playerElo.value, startInQueue.value);
-    playerName.value = '';
-    playerElo.value = 0;
-    startInQueue.value = false;
+const addNewPlayers = () => {
+  if (!validatePlayerNames()) return;
 
-    nextTick(() => {
-      playerNameInput.value.focus();
-    });
-  }
+  const playerList = playerNames.value
+      .split("\n")
+      .map(name => name.trim())
+      .filter(name => name.length > 0);
+
+  playerList.forEach(name => {
+    if (name.length <= 30 && !playersStore.players.some(player => player.name === name)) {
+      playersStore.addPlayer(name, null, false);
+    }
+  });
+
+  playerNames.value = '';
 };
-const validateForm = () => {
-  const isNameValid = validatePlayerName();
-  const isEloValid = validatePlayerElo();
-  return isNameValid && isEloValid;
-};
-const validatePlayerElo = () => {
-  if (playerElo.value === null || playerElo.value === '') {
-    playerElo.value = 0;
+const validatePlayerNames = () => {
+  const names = playerNames.value.split("\n").map(name => name.trim()).filter(name => name.length > 0);
+
+  if (names.length === 0) {
+    playerNamesError.value = t('playerNameRequired');
+    return false;
   }
 
-  if (!Number.isInteger(playerElo.value) || playerElo.value < 0) {
-    playerEloError.value = t('eloTooLow');
+  if (names.some(name => name.length > 30)) {
+    playerNamesError.value = t('playerNameTooLong');
     return false;
   }
-  if (playerElo.value > 3000) {
-    playerEloError.value = t('eloTooHigh');
-    return false;
-  }
-  playerEloError.value = '';
-  return true;
-};
-const validatePlayerName = () => {
-  if (!playerName.value.trim()) {
-    playerNameError.value = t('playerNameRequired');
-    return false;
-  }
-  if (playerName.value.length > 30) {
-    playerNameError.value = t('playerNameTooLong');
-    return false;
-  }
-  playerNameError.value = '';
+
+  playerNamesError.value = "";
   return true;
 };
 </script>

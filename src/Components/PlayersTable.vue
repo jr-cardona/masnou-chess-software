@@ -8,7 +8,7 @@
         empty-text=""
         responsive
         class="custom-table mt-3"
-        style="max-height: 800px"
+        style="max-height: 1080px"
     >
       <template #cell(actions)="data">
         <b-button
@@ -58,14 +58,13 @@
 import {usePlayersStore} from '../stores/usePlayersStore';
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {BTable, BButton} from 'bootstrap-vue-3';
-import {useI18n} from "vue-i18n";
+import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n({useScope: 'global'})
 const playersStore = usePlayersStore();
 const tournamentStore = useTournamentStore();
 const fields = [
   {key: 'name', label: t('name')},
-  'elo',
   {key: 'points', label: t('point', 2), class: 'text-center'},
   {key: 'actions', label: '', class: 'text-center'}
 ];

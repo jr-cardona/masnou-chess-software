@@ -53,7 +53,6 @@
 
 <script setup>
 import TournamentTimer from '../Components/TournamentTimer.vue';
-import Winners from '../Components/Winners.vue';
 import AddPlayer from '../Components/AddPlayer.vue';
 import PlayersList from './PlayersTable.vue';
 import GameList from './GamesTable.vue';
