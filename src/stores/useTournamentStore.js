@@ -12,6 +12,8 @@ export const useTournamentStore = defineStore('tournamentStore', {
     actions: {
         startPairing() {
             const playersStore = usePlayersStore();
+            const queueStore = useQueueStore();
+            const gamesStore = useGamesStore();
             const totalPlayers = playersStore.players.length;
 
             if (totalPlayers < 6 || this.status === 'inCourse') {
@@ -19,41 +21,26 @@ export const useTournamentStore = defineStore('tournamentStore', {
             }
 
             useHistoryStore().saveState();
-            const queueStore = useQueueStore();
-            this.calculateInitialQueue(queueStore, playersStore, totalPlayers);
-
-            const playersNotInQueue = playersStore.players.filter(
-                player => !queueStore.queue.includes(player.name)
-            );
-
-            this.assignGames(playersNotInQueue);
-            this.status = 'paired';
-
-            return { success: true };
-        },
-
-        calculateInitialQueue(queueStore, playersStore, totalPlayers) {
-            const expectedQueueLength = totalPlayers - ((Math.round(totalPlayers / 3)) * 2);
-
-            if (queueStore.queue.length < expectedQueueLength) {
-                const missingInQueue = expectedQueueLength - queueStore.queue.length;
-                const queueSet = new Set(queueStore.queue);
-                const availablePlayers = playersStore.players.filter(player => !queueSet.has(player.name));
-                availablePlayers.slice(-missingInQueue).forEach(player => queueStore.enqueue(player.name));
-            }
-        },
-
-        assignGames(playersNotInQueue) {
-            const gamesStore = useGamesStore();
-            const midIndex = Math.ceil(playersNotInQueue.length / 2);
-            const firstHalf = playersNotInQueue.slice(0, midIndex);
-            const secondHalf = playersNotInQueue.slice(midIndex);
-
-            firstHalf.forEach((player, index) => {
-                if (secondHalf[index]) {
-                    gamesStore.activeGames[index] = {white: player.name, black: secondHalf[index].name};
+            const shuffledPlayers = this.shuffleArray([...playersStore.players]);
+            const queueSize = totalPlayers - Math.round((totalPlayers / 3) * 2);
+            const playersInGames = shuffledPlayers.slice(0, totalPlayers - queueSize);
+            const playersInQueue = shuffledPlayers.slice(totalPlayers - queueSize);
+            for (let i = 0; i < playersInGames.length; i += 2) {
+                if (playersInGames[i + 1]) {
+                    gamesStore.activeGames[i / 2] = {
+                        white: playersInGames[i].name,
+                        black: playersInGames[i + 1].name
+                    };
                 }
-            });
+            }
+            queueStore.queue = playersInQueue.map(player => player.name);
+
+            this.status = 'paired';
+            return {success: true};
+        },
+
+        shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
         },
 
         startTournament() {

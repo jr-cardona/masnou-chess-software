@@ -46,7 +46,7 @@
             class="w-100 mt-2 fs-5 fw-medium"
             size="md"
         >
-          {{ t('startPairing') }} <i class="bi bi-crosshair"></i>
+          {{ t('randomPairing') }} <i class="bi bi-shuffle"></i>
         </b-button>
       </template>
     </b-table>
