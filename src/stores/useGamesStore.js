@@ -3,6 +3,7 @@ import {useHistoryStore} from "./useHistoryStore";
 import {usePlayersStore} from "./usePlayersStore";
 import {useQueueStore} from "./useQueueStore";
 import {useTournamentStore} from "./useTournamentStore";
+import {useSettingsStore} from "./useSettingsStore";
 
 export const useGamesStore = defineStore('gamesStore', {
     state: () => ({
@@ -10,53 +11,84 @@ export const useGamesStore = defineStore('gamesStore', {
     }),
     actions: {
         processResult(board, winnerColor) {
-            if (!this.activeGames[board]) {
-                return;
-            }
+            if (!this.activeGames[board]) return;
+
             useHistoryStore().saveState();
-            const {white: whiteName, black: blackName} = this.activeGames[board];
-            if (winnerColor === 'white') {
-                this.whiteWins(board, whiteName, blackName);
-            } else if (winnerColor === 'black') {
-                this.blackWins(board, whiteName, blackName);
-            } else {
-                this.draw(board, whiteName, blackName);
-            }
+            const {white, black} = this.activeGames[board];
+
+            if (winnerColor === 'white') return this.whiteWins(board, white, black);
+            if (winnerColor === 'black') return this.blackWins(board, white, black);
+            this.draw(board, white, black);
         },
 
         whiteWins(board, white, black) {
+            const queueStore = useQueueStore();
             const playersStore = usePlayersStore();
+
             playersStore.players.find(player => player.name === white).points += 1;
-            this.repair(board, white, black);
+            queueStore.enqueue(black);
+
+            this.getOpponent(board, white, this.getNewColor(true));
         },
 
         blackWins(board, white, black) {
+            const queueStore = useQueueStore();
             const playersStore = usePlayersStore();
+
             playersStore.players.find(player => player.name === black).points += 1;
-            this.repair(board, black, white);
+            queueStore.enqueue(white);
+
+            this.getOpponent(board, black, this.getNewColor(false));
         },
 
         draw(board, white, black) {
+            const queueStore = useQueueStore();
             const playersStore = usePlayersStore();
+            const settingsStore = useSettingsStore();
+
             playersStore.players.find(player => player.name === white).points += 0.5;
             playersStore.players.find(player => player.name === black).points += 0.5;
-            this.repair(board, black, white);
+
+            switch (settingsStore.settings.drawScenario) {
+                case 'bothOut':
+                    queueStore.enqueue(black);
+                    queueStore.enqueue(white);
+                    this.getOpponent(board, null, null);
+                    break;
+                case 'whiteOut':
+                    queueStore.enqueue(white);
+                    this.getOpponent(board, black, this.getNewColor(false));
+                    break;
+            }
         },
 
-        repair(board, winner, loser) {
-            const playersStore = usePlayersStore()
+        getNewColor(isWhite) {
+            const settingsStore = useSettingsStore();
+            return settingsStore.settings.winnerColor === 'changes' ? !isWhite : isWhite;
+        },
+
+        getOpponent(board, winner, whiteWinner) {
             const queueStore = useQueueStore();
             const tournamentStore = useTournamentStore();
-            playersStore.players.sort((a, b) => b.points - a.points);
-            if (tournamentStore.timer > 0) {
-                this.activeGames[board] = {white: winner, black: queueStore.dequeue()};
-                queueStore.enqueue(loser);
-            } else {
+
+            if (tournamentStore.timer <= 0) {
                 delete this.activeGames[board];
                 if (this.activeGames.length === 0) {
                     tournamentStore.endTournament();
                 }
+                return;
             }
+
+            if (!winner) {
+                this.activeGames[board] = {white: queueStore.dequeue(), black: queueStore.dequeue()};
+                return;
+            }
+
+            this.activeGames[board] = whiteWinner
+                ? {white: winner, black: queueStore.dequeue()}
+                : {white: queueStore.dequeue(), black: winner};
+
+            usePlayersStore().players.sort((a, b) => b.points - a.points);
         },
     }
 });

@@ -31,7 +31,6 @@ export const useTournamentStore = defineStore('tournamentStore', {
             const playersSize = Math.min(totalPlayers - queueSize, maxPlayersInGames);
             const playersInGames = shuffledPlayers.slice(0, playersSize);
             const playersInQueue = shuffledPlayers.slice(playersSize);
-            gamesStore.activeGames = {};
             for (let i = 0; i < playersInGames.length; i += 2) {
                 if (playersInGames[i + 1]) {
                     gamesStore.activeGames[i / 2] = {

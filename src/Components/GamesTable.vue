@@ -81,6 +81,8 @@ const startPairing = () => {
       position: 'top-end',
       showConfirmButton: false,
       icon: 'error',
+      timer: 4000,
+      timerProgressBar: true,
     });
   }
 };

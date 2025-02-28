@@ -58,6 +58,7 @@ import PlayersList from './PlayersTable.vue';
 import GameList from './GamesTable.vue';
 import QueuePlayers from './QueuePlayers.vue';
 import SettingsModal from './SettingsModal.vue';
+import Swal from 'sweetalert2';
 import {BButton} from 'bootstrap-vue-3';
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {useSettingsStore} from '../stores/useSettingsStore';
@@ -72,9 +73,19 @@ const historyStore = useHistoryStore();
 
 onMounted(() => {
   window.electron.ipcRenderer.on('open-settings', () => {
-    if (tournamentStore.status === 'idle') {
+    if (tournamentStore.status !== 'inCourse') {
       settingsStore.showModal = true;
+      return;
     }
+    Swal.fire({
+      title: t('tournamentInCourse'),
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      icon: 'error',
+      timer: 4000,
+      timerProgressBar: true,
+    });
   });
 
   window.electron.ipcRenderer.on('perform-undo', () => {

@@ -149,7 +149,6 @@ const winLimitOptions = [
 ];
 const drawOptions = [
   {value: 'whiteOut', text: t('whiteSitsOut')},
-  {value: 'higherOut', text: t('higherScoreSitsOut')},
   {value: 'bothOut', text: t('bothSitOut')},
 ];
 const isFormValid = computed(() => {
