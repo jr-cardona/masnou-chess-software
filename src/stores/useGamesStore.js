@@ -20,15 +20,19 @@ export const useGamesStore = defineStore('gamesStore', {
         },
 
         whiteWins(board, white, black) {
-            white.points += 1;
-            white.wins += 1;
+            const playersStore = usePlayersStore();
+            const winner = playersStore.players.find(p => p.name === white.name);
+            winner.points += 1;
+            winner.wins += 1;
             useQueueStore().enqueue(black);
             this.getOpponent(board, white, this.getNewColor(true));
         },
 
         blackWins(board, white, black) {
-            black.points += 1;
-            black.wins += 1;
+            const playersStore = usePlayersStore();
+            const winner = playersStore.players.find(p => p.name === black.name);
+            winner.points += 1;
+            winner.wins += 1;
             useQueueStore().enqueue(white);
             this.getOpponent(board, black, this.getNewColor(false));
         },
@@ -36,9 +40,12 @@ export const useGamesStore = defineStore('gamesStore', {
         draw(board, white, black) {
             const queueStore = useQueueStore();
             const settingsStore = useSettingsStore();
+            const playersStore = usePlayersStore();
 
-            white.points += 0.5;
-            black.points += 0.5;
+            const whitePlayer = playersStore.players.find(p => p.name === white.name);
+            const blackPlayer = playersStore.players.find(p => p.name === black.name);
+            whitePlayer.points += 0.5;
+            blackPlayer.points += 0.5;
 
             switch (settingsStore.settings.drawScenario) {
                 case 'bothOut':

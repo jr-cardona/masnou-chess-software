@@ -53,6 +53,7 @@ export const usePlayersStore = defineStore('playersStore', {
         },
 
         addTestData() {
+            useHistoryStore().saveState();
             this.players.push(...[
                 {name: "Hurtado Felipe", elo: 2900, points: 0, wins: 0, status: "active"},
                 {name: "Magnus Carlsen", elo: 2850, points: 0, wins: 0, status: "active"},
