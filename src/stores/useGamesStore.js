@@ -61,7 +61,7 @@ export const useGamesStore = defineStore('gamesStore', {
             const tournamentStore = useTournamentStore();
 
             if (tournamentStore.timer <= 0) {
-                delete this.activeGames[board];
+                this.activeGames.splice(board, 1);
                 if (this.activeGames.length === 0) {
                     tournamentStore.endTournament();
                 }
@@ -69,10 +69,19 @@ export const useGamesStore = defineStore('gamesStore', {
             }
 
             if (!winner) {
+                if (this.shouldRemoveBoardDueToBalance()) {
+                    this.activeGames.splice(board, 1);
+                    return;
+                }
                 this.activeGames[board] = {white: queueStore.dequeue(), black: queueStore.dequeue()};
                 return;
             }
 
+            if (this.shouldRemoveBoardDueToBalance()) {
+                queueStore.enqueueAtStart(winner);
+                this.activeGames.splice(board, 1);
+                return;
+            }
             this.activeGames[board] = whiteWinner
                 ? {white: winner, black: queueStore.dequeue()}
                 : {white: queueStore.dequeue(), black: winner};
@@ -92,11 +101,19 @@ export const useGamesStore = defineStore('gamesStore', {
         removePlayerFromGame(player) {
             const queueStore = useQueueStore();
 
-            const game = this.activeGames.find(
+            const boardIndex = this.activeGames.findIndex(
                 g => g.white.name === player.name || g.black.name === player.name
             );
 
-            if (!game) return;
+            if (boardIndex === -1) return;
+
+            const game = this.activeGames[boardIndex];
+            if (this.shouldRemoveBoardDueToBalance()) {
+                const opponent = game.white.name === player.name ? game.black : game.white;
+                queueStore.enqueueAtStart(opponent);
+                this.activeGames.splice(boardIndex, 1);
+                return;
+            }
 
             const nextPlayer = queueStore.dequeue();
 
@@ -106,6 +123,13 @@ export const useGamesStore = defineStore('gamesStore', {
             if (game.black.name === player.name) {
                 game.black = nextPlayer;
             }
+        },
+
+        shouldRemoveBoardDueToBalance() {
+            const queueStore = useQueueStore();
+            const activePlayers = usePlayersStore().players.filter(p => p.status !== 'paused').length;
+            const idealQueueSize = activePlayers - (Math.round(activePlayers / 3) * 2);
+            return queueStore.queue.length < idealQueueSize && this.activeGames.length > 1;
         }
     }
 });

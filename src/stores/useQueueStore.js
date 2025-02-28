@@ -10,6 +10,11 @@ export const useQueueStore = defineStore('queueStore', {
             this.queue.push(player);
         },
 
+        enqueueAtStart(player) {
+            player.status = 'queued';
+            this.queue.unshift(player);
+        },
+
         dequeue() {
             const player = this.queue.shift();
             player.status = 'playing';

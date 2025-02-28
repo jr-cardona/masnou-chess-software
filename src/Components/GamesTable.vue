@@ -114,8 +114,8 @@ const startPairing = () => {
   }
 };
 const canAddBoard = computed(() => {
-  const totalPlayers = playersStore.players.length;
-  const idealQueueSize = totalPlayers - (Math.round(totalPlayers / 3) * 2);
+  const activePlayers = playersStore.players.filter(p => p.status !== 'paused').length;
+  const idealQueueSize = activePlayers - (Math.round(activePlayers / 3) * 2);
   const canEnable = queueStore.queue.length > idealQueueSize;
   const hasSpace = gamesStore.activeGames.length < settingStore.settings.maxBoards;
   return canEnable && hasSpace;
