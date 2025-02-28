@@ -2,52 +2,54 @@ import {defineStore} from 'pinia';
 import {useQueueStore} from './useQueueStore';
 import {useHistoryStore} from './useHistoryStore';
 import {useTournamentStore} from './useTournamentStore';
+import {useGamesStore} from "./useGamesStore";
 
 export const usePlayersStore = defineStore('playersStore', {
     state: () => ({
         players: [],
     }),
     actions: {
-        addPlayer(name, elo, startInQueue) {
+        addPlayer(name) {
             if (this.players.some(player => player.name === name)) {
                 return;
             }
             useHistoryStore().saveState();
-            this.players.push({name, points: 0, elo, status: 'active'});
-            this.players.sort((a, b) => b.points - a.points || b.elo - a.elo);
+            const newPlayer = {name: name, points: 0, status: 'active'};
+            this.players.push(newPlayer);
+            this.players.sort((a, b) => b.points - a.points);
             const tournamentStore = useTournamentStore();
-            if (tournamentStore.status === 'inCourse' || tournamentStore.status === 'paired' || startInQueue) {
+            if (tournamentStore.status === 'inCourse' || tournamentStore.status === 'paired') {
                 const queueStore = useQueueStore();
-                queueStore.enqueue(name);
+                queueStore.enqueue(newPlayer);
             }
         },
 
-        removePlayer(name) {
+        removePlayer(player) {
             useHistoryStore().saveState();
-            this.players = this.players.filter(player => player.name !== name);
+            this.players = this.players.filter(p => p.name !== player.name);
             const queueStore = useQueueStore();
-            queueStore.removeFromQueue(name);
+            queueStore.removeFromQueue(player);
         },
 
-        pausePlayer(name) {
-            const player = this.players.find(p => p.name === name);
-            if (player) {
-                useHistoryStore().saveState();
-                const queueStore = useQueueStore();
-                queueStore.removeFromQueue(name);
-                player.status = 'paused';
+        pausePlayer(player) {
+            if (!player) return;
+
+            const queueStore = useQueueStore();
+            const gameStore = useGamesStore();
+            useHistoryStore().saveState();
+
+            if (player.status === 'playing') {
+                gameStore.removePlayerFromGame(player);
+            } else {
+                queueStore.removeFromQueue(player);
             }
+            player.status = 'paused';
         },
 
-        resumePlayer(name) {
-            const player = this.players.find(p => p.name === name);
-            if (player) {
-                useHistoryStore().saveState();
-                const queueStore = useQueueStore();
-                // @ToDo this might generate a bug if the player is already in a game
-                queueStore.enqueue(name);
-                player.status = 'active';
-            }
+        resumePlayer(player) {
+            const queueStore = useQueueStore();
+            useHistoryStore().saveState();
+            queueStore.enqueue(player);
         },
 
         addTestData() {

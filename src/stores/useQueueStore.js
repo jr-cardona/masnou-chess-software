@@ -17,7 +17,7 @@ export const useQueueStore = defineStore('queueStore', {
         },
 
         removeFromQueue(player) {
-            this.queue = this.queue.filter(_player => _player.name !== player.name);
+            this.queue = this.queue.filter(p => p.name !== player.name);
         },
     }
 });

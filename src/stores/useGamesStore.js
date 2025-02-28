@@ -79,5 +79,24 @@ export const useGamesStore = defineStore('gamesStore', {
 
             usePlayersStore().players.sort((a, b) => b.points - a.points);
         },
+
+        removePlayerFromGame(player) {
+            const queueStore = useQueueStore();
+
+            const game = this.activeGames.find(
+                g => g.white.name === player.name || g.black.name === player.name
+            );
+
+            if (!game) return;
+
+            const nextPlayer = queueStore.dequeue();
+
+            if (game.white.name === player.name) {
+                game.white = nextPlayer;
+            }
+            if (game.black.name === player.name) {
+                game.black = nextPlayer;
+            }
+        }
     }
 });

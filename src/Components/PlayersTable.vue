@@ -19,7 +19,7 @@
             v-if="tournamentStore.status === 'idle'"
             variant="danger"
             size="sm"
-            @click="playersStore.removePlayer(data.item.name)">
+            @click="playersStore.removePlayer(data.item)">
           <i class="bi bi-trash"></i>
         </b-button>
         <b-button
@@ -27,7 +27,7 @@
             v-else-if="data.item.status === 'paused'"
             variant="warning"
             size="sm"
-            @click="playersStore.resumePlayer(data.item.name)">
+            @click="playersStore.resumePlayer(data.item)">
           <i class="bi bi-play"></i>
         </b-button>
         <b-button
@@ -35,7 +35,7 @@
             v-else
             variant="secondary"
             size="sm"
-            @click="playersStore.pausePlayer(data.item.name)">
+            @click="playersStore.pausePlayer(data.item)">
           <i class="bi bi-pause"></i>
         </b-button>
       </template>
