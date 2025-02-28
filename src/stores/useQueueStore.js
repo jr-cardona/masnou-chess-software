@@ -5,16 +5,19 @@ export const useQueueStore = defineStore('queueStore', {
         queue: [],
     }),
     actions: {
-        enqueue(name) {
-            this.queue.push(name);
+        enqueue(player) {
+            player.status = 'queued';
+            this.queue.push(player);
         },
 
         dequeue() {
-            return this.queue.shift();
+            const player = this.queue.shift();
+            player.status = 'playing';
+            return player;
         },
 
-        removeFromQueue(name) {
-            this.queue = this.queue.filter(playerName => playerName !== name);
+        removeFromQueue(player) {
+            this.queue = this.queue.filter(_player => _player.name !== player.name);
         },
     }
 });

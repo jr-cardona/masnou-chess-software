@@ -12,42 +12,31 @@ export const useGamesStore = defineStore('gamesStore', {
     actions: {
         processResult(board, winnerColor) {
             if (!this.activeGames[board]) return;
-
             useHistoryStore().saveState();
             const {white, black} = this.activeGames[board];
-
             if (winnerColor === 'white') return this.whiteWins(board, white, black);
             if (winnerColor === 'black') return this.blackWins(board, white, black);
-            this.draw(board, white, black);
+            return this.draw(board, white, black);
         },
 
         whiteWins(board, white, black) {
-            const queueStore = useQueueStore();
-            const playersStore = usePlayersStore();
-
-            playersStore.players.find(player => player.name === white).points += 1;
-            queueStore.enqueue(black);
-
+            white.points += 1;
+            useQueueStore().enqueue(black);
             this.getOpponent(board, white, this.getNewColor(true));
         },
 
         blackWins(board, white, black) {
-            const queueStore = useQueueStore();
-            const playersStore = usePlayersStore();
-
-            playersStore.players.find(player => player.name === black).points += 1;
-            queueStore.enqueue(white);
-
+            black.points += 1;
+            useQueueStore().enqueue(white);
             this.getOpponent(board, black, this.getNewColor(false));
         },
 
         draw(board, white, black) {
             const queueStore = useQueueStore();
-            const playersStore = usePlayersStore();
             const settingsStore = useSettingsStore();
 
-            playersStore.players.find(player => player.name === white).points += 0.5;
-            playersStore.players.find(player => player.name === black).points += 0.5;
+            white.points += 0.5;
+            black.points += 0.5;
 
             switch (settingsStore.settings.drawScenario) {
                 case 'bothOut':

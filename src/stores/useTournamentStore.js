@@ -26,20 +26,24 @@ export const useTournamentStore = defineStore('tournamentStore', {
             }
 
             useHistoryStore().saveState();
-            const shuffledPlayers = this.shuffleArray([...playersStore.players]);
+            this.shuffleArray(playersStore.players);
             const queueSize = totalPlayers - Math.round((totalPlayers / 3) * 2);
             const playersSize = Math.min(totalPlayers - queueSize, maxPlayersInGames);
-            const playersInGames = shuffledPlayers.slice(0, playersSize);
-            const playersInQueue = shuffledPlayers.slice(playersSize);
+            const playersInGames = playersStore.players.slice(0, playersSize);
+            const playersInQueue = playersStore.players.slice(playersSize);
             for (let i = 0; i < playersInGames.length; i += 2) {
                 if (playersInGames[i + 1]) {
                     gamesStore.activeGames[i / 2] = {
-                        white: playersInGames[i].name,
-                        black: playersInGames[i + 1].name
+                        white: playersInGames[i],
+                        black: playersInGames[i + 1]
                     };
+                    playersInGames[i].status = 'playing';
+                    playersInGames[i + 1].status = 'playing';
                 }
             }
-            queueStore.queue = playersInQueue.map(player => player.name);
+            for (let i = 0; i < playersInQueue.length; i++) {
+                queueStore.enqueue(playersInQueue[i]);
+            }
 
             this.status = 'paired';
             return {success: true};

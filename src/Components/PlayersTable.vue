@@ -23,20 +23,20 @@
           <i class="bi bi-trash"></i>
         </b-button>
         <b-button
+            :title="t('resumePlayer')"
+            v-else-if="data.item.status === 'paused'"
+            variant="warning"
+            size="sm"
+            @click="playersStore.resumePlayer(data.item.name)">
+          <i class="bi bi-play"></i>
+        </b-button>
+        <b-button
             :title="t('pausePlayer')"
-            v-else-if="data.item.status === 'active'"
+            v-else
             variant="secondary"
             size="sm"
             @click="playersStore.pausePlayer(data.item.name)">
           <i class="bi bi-pause"></i>
-        </b-button>
-        <b-button
-            :title="t('resumePlayer')"
-            v-else
-            variant="success"
-            size="sm"
-            @click="playersStore.resumePlayer(data.item.name)">
-          <i class="bi bi-play"></i>
         </b-button>
       </template>
       <template #empty>
@@ -69,6 +69,7 @@ const tournamentStore = useTournamentStore();
 const fields = [
   {key: 'name', label: t('name')},
   {key: 'points', label: t('point', 2), class: 'text-center'},
+  {key: 'status', label: t('status'), class: 'text-center'},
   {key: 'actions', label: '', class: 'text-center'}
 ];
 </script>

@@ -13,6 +13,12 @@
       <template #cell(board)="data">
         #{{ data.index + 1 }}
       </template>
+      <template #cell(white)="data">
+        {{ data.item.white.name }}
+      </template>
+      <template #cell(black)="data">
+        {{ data.item.black.name }}
+      </template>
       <template #cell(result)="data" nowrap="nowrap">
         <div class="text-center">
           <b-button-group v-if="tournamentStore.status === 'inCourse'">
