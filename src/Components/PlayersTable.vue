@@ -10,6 +10,9 @@
         class="custom-table mt-3"
         style="max-height: 1080px"
     >
+      <template #cell(name)="data">
+        {{ data.index + 1 }}. {{ data.item.name }}
+      </template>
       <template #cell(actions)="data">
         <b-button
             :title="t('removePlayer')"

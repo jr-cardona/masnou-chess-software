@@ -61,7 +61,13 @@
         </b-form-group>
 
         <b-form-group :label="t('maxBoards')">
-          <b-form-input type="number" v-model="settingsStore.settings.maxBoards" min="1" required/>
+          <b-form-input
+              type="number"
+              v-model="settingsStore.settings.maxBoards"
+              min="3"
+              required
+          />
+          <div v-if="maxBoardsError" class="invalid-feedback d-block">{{ maxBoardsError }}</div>
         </b-form-group>
 
         <b-form-group :label="t('tournamentDuration')">
@@ -119,6 +125,7 @@ import {BModal, BButton, BFormGroup, BFormSelect, BFormInput, BTabs} from 'boots
 const {t, locale} = useI18n({useScope: 'global'});
 const settingsStore = useSettingsStore();
 const timeError = ref('');
+const maxBoardsError = ref('');
 const language = ref(localStorage.getItem('language') ?? 'us');
 const theme = ref('dark');
 const isOpen = ref(false);
@@ -145,20 +152,24 @@ const drawOptions = [
   {value: 'higherOut', text: t('higherScoreSitsOut')},
   {value: 'bothOut', text: t('bothSitOut')},
 ];
-
 const isFormValid = computed(() => {
   return Object.values(settingsStore.settings).every(val => val !== '' && val !== null);
 });
-
 const saveSettings = () => {
   if (settingsStore.settings.hours === 0 && settingsStore.settings.minutes < 5) {
     timeError.value = t('invalidTime');
     return;
   }
   timeError.value = '';
+
+  if (settingsStore.settings.maxBoards < 3) {
+    maxBoardsError.value = t('minBoardsRequired');
+    return;
+  }
+  maxBoardsError.value = '';
+
   settingsStore.setSettings();
 };
-
 const validateHours = () => {
   if (settingsStore.settings.hours === '' || isNaN(settingsStore.settings.hours)) {
     settingsStore.settings.hours = 0;
@@ -166,7 +177,6 @@ const validateHours = () => {
   }
   settingsStore.settings.hours = Math.max(0, Math.min(99, parseInt(settingsStore.settings.hours, 10)));
 };
-
 const validateMinutes = () => {
   if (settingsStore.settings.minutes === '' || isNaN(settingsStore.settings.minutes)) {
     settingsStore.settings.minutes = 0;
