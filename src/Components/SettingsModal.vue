@@ -22,7 +22,7 @@
           <button class="custom-dropdown-toggle" @click="isOpen = !isOpen">
             <span>
               <span class="flag">
-                <img :src="`/flags/${selectedLanguage.value}.svg`" width="30" :alt="selectedLanguage.text">
+                <img :src="`flags/${selectedLanguage.value}.svg`" width="30" :alt="selectedLanguage.text">
               </span>
               {{ selectedLanguage.text }}
             </span>
@@ -32,7 +32,7 @@
             <div v-for="(lang, index) in languages" :key="lang.value">
               <div @click="selectLanguage(lang)" class="custom-dropdown-item">
                 <span class="flag">
-                  <img :src="`/flags/${lang.value}.svg`" width="30" :alt="lang.text">
+                  <img :src="`flags/${lang.value}.svg`" width="30" :alt="lang.text">
                 </span>
                 {{ lang.text }}
               </div>
@@ -155,7 +155,7 @@ const isFormValid = computed(() => {
   return Object.values(settingsStore.settings).every(val => val !== '' && val !== null);
 });
 const saveSettings = () => {
-  if (settingsStore.settings.hours === 0 && settingsStore.settings.minutes < 5) {
+  if (settingsStore.settings.hours === 0 && settingsStore.settings.minutes < 1) {
     timeError.value = t('invalidTime');
     return;
   }
