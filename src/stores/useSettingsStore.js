@@ -15,7 +15,7 @@ export const useSettingsStore = defineStore('settings', {
         showModal: false,
     }),
     actions: {
-        setSettings(timer) {
+        setSettings() {
             const tournamentStore = useTournamentStore();
             if (tournamentStore.status === 'idle') {
                 localStorage.setItem('tournament.settings', JSON.stringify(this.settings));

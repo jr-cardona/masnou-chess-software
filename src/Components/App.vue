@@ -2,7 +2,7 @@
   <div class='container-full'>
     <SettingsModal></SettingsModal>
     <div class="d-flex align-items-center justify-content-center">
-      <h1 class="me-3">{{ settingsStore.settings.tournamentName }}</h1>
+      <h1 v-if="tournamentStore.status !== 'finished'" class="me-3">{{ settingsStore.settings.tournamentName }}</h1>
       <b-button size="lg"
                 variant="warning"
                 v-if="tournamentStore.status === 'paired'"
@@ -25,26 +25,32 @@
         <i class="bi bi-play"></i> {{ t('resume') }}
       </b-button>
     </div>
-    <div class="d-flex flex-column flex-md-row mt-2 position-relative">
-      <div class="col-md-3 px-4">
-        <AddPlayer/>
-      </div>
-      <div class="col-md-6 d-flex flex-column align-items-center px-4">
-        <div class="w-100">
-          <TournamentTimer/>
+    <div v-if="tournamentStore.status === 'finished'" class="d-flex justify-content-center align-items-center">
+      <PlayersList class="fs-1 w-75"/>
+    </div>
+
+    <div v-else>
+      <div class="d-flex flex-column flex-md-row mt-2 position-relative">
+        <div class="col-md-3 px-4">
+          <AddPlayer v-if="tournamentStore.timer > 0"/>
+        </div>
+        <div class="col-md-6 d-flex flex-column align-items-center px-4">
+          <div class="w-100">
+            <TournamentTimer/>
+          </div>
+        </div>
+        <div class="col-md-3 px-4 d-flex flex-column position-absolute end-0">
+          <PlayersList class="flex-grow-1 overflow-auto"/>
         </div>
       </div>
-      <div class="col-md-3 px-4 d-flex flex-column position-absolute end-0">
-        <PlayersList class="flex-grow-1 overflow-auto"/>
-      </div>
-    </div>
-    <div class="d-flex flex-column flex-md-row mt-2">
-      <div class="col-md-3 px-4">
-        <QueuePlayers/>
-      </div>
-      <div class="col-md-6 d-flex flex-column align-items-center px-4">
-        <div class="w-100">
-          <GameList/>
+      <div class="d-flex flex-column flex-md-row mt-2">
+        <div class="col-md-3 px-4">
+          <QueuePlayers v-if="tournamentStore.timer > 0"/>
+        </div>
+        <div class="col-md-6 d-flex flex-column align-items-center px-4">
+          <div class="w-100">
+            <GameList/>
+          </div>
         </div>
       </div>
     </div>

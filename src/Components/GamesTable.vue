@@ -118,7 +118,7 @@ const canAddBoard = computed(() => {
   const idealQueueSize = activePlayers - (Math.round(activePlayers / 3) * 2);
   const canEnable = queueStore.queue.length > idealQueueSize;
   const hasSpace = gamesStore.activeGames.length < settingStore.settings.maxBoards;
-  return canEnable && hasSpace;
+  return canEnable && hasSpace && tournamentStore.timer > 0;
 });
 </script>
 <style>

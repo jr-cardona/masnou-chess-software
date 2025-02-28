@@ -21,12 +21,14 @@ export const useGamesStore = defineStore('gamesStore', {
 
         whiteWins(board, white, black) {
             white.points += 1;
+            white.wins += 1;
             useQueueStore().enqueue(black);
             this.getOpponent(board, white, this.getNewColor(true));
         },
 
         blackWins(board, white, black) {
             black.points += 1;
+            black.wins += 1;
             useQueueStore().enqueue(white);
             this.getOpponent(board, black, this.getNewColor(false));
         },
@@ -59,6 +61,9 @@ export const useGamesStore = defineStore('gamesStore', {
         getOpponent(board, winner, whiteWinner) {
             const queueStore = useQueueStore();
             const tournamentStore = useTournamentStore();
+            const playersStore = usePlayersStore();
+
+            playersStore.players.sort((a, b) => b.points - a.points || b.wins - a.wins);
 
             if (tournamentStore.timer <= 0) {
                 this.activeGames.splice(board, 1);
@@ -85,8 +90,6 @@ export const useGamesStore = defineStore('gamesStore', {
             this.activeGames[board] = whiteWinner
                 ? {white: winner, black: queueStore.dequeue()}
                 : {white: queueStore.dequeue(), black: winner};
-
-            usePlayersStore().players.sort((a, b) => b.points - a.points);
         },
 
         addBoard() {

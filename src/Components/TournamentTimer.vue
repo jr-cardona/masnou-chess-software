@@ -1,5 +1,5 @@
 <template>
-  <div v-if="tournamentStore.timer > 0" class="mt-4">
+  <div class="mt-4">
     <b-badge :variant="tournamentStore.timer <= 90 ? 'danger' : 'primary'" class="timer-badge w-100 p-3">
       {{ formattedTime }}
     </b-badge>
@@ -22,13 +22,9 @@ const formattedTime = computed(() => {
 });
 
 onMounted(() => {
-  const timerInterval = setInterval(() => {
+  setInterval(() => {
     if (tournamentStore.status === 'inCourse') {
-      if (tournamentStore.timer > 0) {
-        tournamentStore.timer--;
-      } else {
-        clearInterval(timerInterval);
-      }
+      tournamentStore.decreaseTimer();
     }
   }, 1000);
 });
