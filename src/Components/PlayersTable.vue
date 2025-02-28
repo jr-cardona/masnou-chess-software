@@ -50,7 +50,7 @@
             class="w-100 mt-2 fs-5 fw-medium"
             size="md"
         >
-          {{ t('addTestData') }} <i class="bi bi-plus"></i>
+          {{ t('addTestData') }} <i class="bi bi-plus-lg"></i>
         </b-button>
       </template>
     </b-table>

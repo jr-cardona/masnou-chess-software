@@ -80,6 +80,15 @@ export const useGamesStore = defineStore('gamesStore', {
             usePlayersStore().players.sort((a, b) => b.points - a.points);
         },
 
+        addBoard() {
+            const queueStore = useQueueStore();
+            const white = queueStore.dequeue();
+            const black = queueStore.dequeue();
+            white.status = 'playing';
+            black.status = 'playing';
+            this.activeGames.push({ white, black });
+        },
+
         removePlayerFromGame(player) {
             const queueStore = useQueueStore();
 

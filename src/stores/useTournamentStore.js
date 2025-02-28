@@ -27,7 +27,7 @@ export const useTournamentStore = defineStore('tournamentStore', {
 
             useHistoryStore().saveState();
             this.shuffleArray(playersStore.players);
-            const queueSize = totalPlayers - Math.round((totalPlayers / 3) * 2);
+            const queueSize = totalPlayers - ((Math.round(totalPlayers / 3)) * 2);
             const playersSize = Math.min(totalPlayers - queueSize, maxPlayersInGames);
             const playersInGames = playersStore.players.slice(0, playersSize);
             const playersInQueue = playersStore.players.slice(playersSize);

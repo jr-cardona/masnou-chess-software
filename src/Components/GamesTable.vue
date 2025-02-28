@@ -55,23 +55,44 @@
           {{ t('randomPairing') }} <i class="bi bi-shuffle"></i>
         </b-button>
       </template>
+      <template #custom-foot>
+        <tr v-if="canAddBoard">
+          <td colspan="4" class="text-center bg-dark text-light">
+            <b-button
+                variant="warning"
+                @click="gamesStore.addBoard()"
+                class="fs-5 fw-medium"
+                size="md"
+            >
+              {{ t('enableBoard') }} <i class="bi bi-plus-lg"></i>
+            </b-button>
+          </td>
+        </tr>
+      </template>
     </b-table>
   </div>
 </template>
 
 <script setup>
-import {useGamesStore} from '../stores/useGamesStore';
 import {BTable, BButton, BButtonGroup} from 'bootstrap-vue-3';
+import {useGamesStore} from '../stores/useGamesStore';
 import {useTournamentStore} from '../stores/useTournamentStore';
+import {usePlayersStore} from '../stores/usePlayersStore';
+import {useQueueStore} from '../stores/useQueueStore';
+import {useSettingsStore} from '../stores/useSettingsStore';
 import {useI18n} from 'vue-i18n';
 import DrawIcon from './icons/DrawIcon.vue';
 import WhiteKingIcon from './icons/WhiteKingIcon.vue';
 import BlackKingIcon from './icons/BlackKingIcon.vue';
 import Swal from 'sweetalert2';
+import {computed} from 'vue';
 
 const {t} = useI18n({useScope: 'global'})
+const queueStore = useQueueStore();
 const gamesStore = useGamesStore();
+const playersStore = usePlayersStore();
 const tournamentStore = useTournamentStore();
+const settingStore = useSettingsStore();
 const fields = [
   {key: 'board', label: t('board'), class: 'text-center small-col'},
   {key: 'white', label: t('white'), class: 'w-25'},
@@ -92,6 +113,13 @@ const startPairing = () => {
     });
   }
 };
+const canAddBoard = computed(() => {
+  const totalPlayers = playersStore.players.length;
+  const idealQueueSize = totalPlayers - (Math.round(totalPlayers / 3) * 2);
+  const canEnable = queueStore.queue.length > idealQueueSize;
+  const hasSpace = gamesStore.activeGames.length < settingStore.settings.maxBoards;
+  return canEnable && hasSpace;
+});
 </script>
 <style>
 .small-col {
