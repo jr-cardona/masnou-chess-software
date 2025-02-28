@@ -37,6 +37,10 @@
         <template #cell(name)="data">
           {{ data.index + 1 }}. {{ data.item.name }}
         </template>
+        <template #cell(status)="data">
+          <i :class="getStatusIcon(data.item.status)" class="me-1 text-primary"></i>
+          {{ getStatusText(data.item.status) }}
+        </template>
         <template #cell(actions)="data">
           <b-button
               :title="t('removePlayer')"
@@ -91,6 +95,24 @@ import {useI18n} from 'vue-i18n';
 const {t} = useI18n({useScope: 'global'})
 const playersStore = usePlayersStore();
 const tournamentStore = useTournamentStore();
+const getStatusText = (status) => {
+  const statusMap = {
+    playing: t('playing'),
+    queued: t('queued'),
+    active: t('active'),
+    paused: t('paused')
+  };
+  return statusMap[status] || status;
+};
+const getStatusIcon = (status) => {
+  const iconMap = {
+    playing: 'bi bi-hourglass-split',
+    queued: 'bi bi-pause-circle',
+    active: 'bi bi-check-circle',
+    paused: 'bi bi-x-circle'
+  };
+  return iconMap[status] || 'bi bi-question-circle';
+};
 const fields = [
   {key: 'name', label: t('name')},
   {key: 'points', label: t('point', 2), class: 'text-center'},
