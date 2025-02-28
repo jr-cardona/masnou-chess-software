@@ -26,7 +26,7 @@
     <div v-else>
       <h3 class="text-center text-warning"><i class="bi bi-trophy p-2"></i> {{ t('scoreboard') }}</h3>
       <b-table
-          :items="playersStore.players"
+          :items="filteredPlayers"
           :fields="fields"
           show-empty=""
           empty-text=""
@@ -34,6 +34,17 @@
           class="custom-table mt-3"
           style="max-height: 1080px"
       >
+        <template #head(name)>
+          <div class="d-flex align-items-center">
+            <span>{{ t('name') }}</span>
+            <BFormInput
+                v-model="searchQuery"
+                class="ms-4 bg-dark text-light"
+                size="sm"
+                placeholder="🔍"
+            />
+          </div>
+        </template>
         <template #cell(name)="data">
           {{ data.index + 1 }}. {{ data.item.name }}
         </template>
@@ -91,10 +102,17 @@ import {usePlayersStore} from '../stores/usePlayersStore';
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {BTable, BButton} from 'bootstrap-vue-3';
 import {useI18n} from 'vue-i18n';
+import {computed, ref} from 'vue';
 
 const {t} = useI18n({useScope: 'global'})
 const playersStore = usePlayersStore();
 const tournamentStore = useTournamentStore();
+const searchQuery = ref('');
+const filteredPlayers = computed(() => {
+  return playersStore.players.filter(player =>
+      player.name.toLowerCase().includes(searchQuery.value.trim().toLowerCase())
+  );
+});
 const getStatusText = (status) => {
   const statusMap = {
     playing: t('playing'),
