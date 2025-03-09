@@ -10,19 +10,28 @@ export const useGamesStore = defineStore('gamesStore', {
         activeGames: [],
     }),
     actions: {
-        processResult(board, winner, loser) {
-            useHistoryStore().saveState();
-            const whiteName = this.activeGames[board].white.name;
-            const blackName = this.activeGames[board].black.name;
+        processResult(boardIndex, winner, loser) {
+            const historyStore = useHistoryStore();
+
+            historyStore.saveState();
+            const whiteName = this.activeGames[boardIndex].white.name;
+            const blackName = this.activeGames[boardIndex].black.name;
 
             if (winner === null && loser === null) {
-                return this.draw(board, whiteName, blackName);
+                historyStore.addMatchResultEvent(boardIndex, whiteName, blackName, '½-½');
+                return this.draw(boardIndex, whiteName, blackName);
             }
 
-            this.handleWin(board, winner, loser, whiteName);
+            let whiteWon = false;
+            if (winner.name === whiteName) {
+                whiteWon = true;
+            }
+            const result = whiteWon ? '1 - 0' : '0 - 1';
+            historyStore.addMatchResultEvent(boardIndex, whiteName, blackName, result);
+            this.handleWin(boardIndex, winner, loser, whiteWon);
         },
 
-        handleWin(board, winner, loser, whiteName) {
+        handleWin(boardIndex, winner, loser, whiteWon) {
             const playersStore = usePlayersStore();
             const queueStore = useQueueStore();
             const settingsStore = useSettingsStore();
@@ -37,16 +46,16 @@ export const useGamesStore = defineStore('gamesStore', {
             const winLimit = settingsStore.settings.maxWins;
 
             if (winLimit !== 'unlimited' && winnerPlayer.consecutiveWins >= parseInt(winLimit, 10)) {
-                queueStore.enqueue(winnerPlayer);
+                queueStore.enqueue(winnerPlayer, 'win_limit');
                 queueStore.enqueue(loserPlayer);
-                this.getOpponent(board, null, null);
+                this.getOpponent(boardIndex, null, null);
                 return;
             }
             queueStore.enqueue(loserPlayer);
-            this.getOpponent(board, winnerPlayer, this.shouldWinnerPlayWhite(winnerPlayer.name === whiteName));
+            this.getOpponent(boardIndex, winnerPlayer, this.shouldWinnerPlayWhite(whiteWon));
         },
 
-        draw(board, whiteName, blackName) {
+        draw(boardIndex, whiteName, blackName) {
             const queueStore = useQueueStore();
             const settingsStore = useSettingsStore();
             const playersStore = usePlayersStore();
@@ -59,30 +68,30 @@ export const useGamesStore = defineStore('gamesStore', {
 
             switch (settingsStore.settings.drawScenario) {
                 case 'bothOut':
-                    queueStore.enqueue(blackPlayer);
-                    queueStore.enqueue(whitePlayer);
-                    this.getOpponent(board, null, null);
+                    queueStore.enqueue(blackPlayer, 'bothOutInDraw');
+                    queueStore.enqueue(whitePlayer, 'bothOutInDraw');
+                    this.getOpponent(boardIndex, null, null);
                     break;
                 case 'whiteOut':
-                    queueStore.enqueue(whitePlayer);
+                    queueStore.enqueue(whitePlayer, 'whiteOutInDraw');
                     blackPlayer.consecutiveWins = 0;
-                    this.getOpponent(board, blackPlayer, this.shouldWinnerPlayWhite(false));
+                    this.getOpponent(boardIndex, blackPlayer, this.shouldWinnerPlayWhite(false));
                     break;
             }
         },
 
-        shouldWinnerPlayWhite(winnerWasWhite) {
+        shouldWinnerPlayWhite(whiteWon) {
             const winnerColorSetting = useSettingsStore().settings.winnerColor;
             const winnerColorRules = {
                 alwaysWhite: true,
                 alwaysBlack: false,
-                repeat: winnerWasWhite,
-                changes: !winnerWasWhite
+                repeat: whiteWon,
+                changes: !whiteWon
             };
-            return winnerColorRules[winnerColorSetting] ?? winnerWasWhite;
+            return winnerColorRules[winnerColorSetting] ?? whiteWon;
         },
 
-        getOpponent(board, winner, shouldWinnerPlayWhite) {
+        getOpponent(boardIndex, winner, shouldWinnerPlayWhite) {
             const queueStore = useQueueStore();
             const tournamentStore = useTournamentStore();
             const playersStore = usePlayersStore();
@@ -90,7 +99,7 @@ export const useGamesStore = defineStore('gamesStore', {
             playersStore.players.sort((a, b) => b.points - a.points || b.wins - a.wins);
 
             if (tournamentStore.timer <= 0) {
-                this.activeGames.splice(board, 1);
+                this.deleteBoard(boardIndex);
                 if (this.activeGames.length === 0) {
                     tournamentStore.endTournament();
                 }
@@ -98,56 +107,81 @@ export const useGamesStore = defineStore('gamesStore', {
             }
 
             if (!winner) {
-                if (this.shouldRemoveBoardDueToBalance()) {
-                    this.activeGames.splice(board, 1);
+                if (this.shouldRemoveBoardDueToBalance(boardIndex)) {
                     return;
                 }
-                this.activeGames[board] = {white: queueStore.dequeue(), black: queueStore.dequeue()};
+                this.pair(boardIndex, queueStore.dequeue(boardIndex), queueStore.dequeue(boardIndex));
                 return;
             }
 
-            if (this.shouldRemoveBoardDueToBalance()) {
-                queueStore.enqueueAtStart(winner);
-                this.activeGames.splice(board, 1);
+            if (this.shouldRemoveBoardDueToBalance(boardIndex, winner)) {
                 return;
             }
 
-            this.activeGames[board] = shouldWinnerPlayWhite
-                ? {white: winner, black: queueStore.dequeue()}
-                : {white: queueStore.dequeue(), black: winner};
+            if (shouldWinnerPlayWhite) {
+                this.pair(boardIndex, winner, queueStore.dequeue(boardIndex));
+                return;
+            }
+            this.pair(boardIndex, queueStore.dequeue(boardIndex), winner);
+        },
+
+        pair(board, white, black) {
+            const historyStore = useHistoryStore();
+
+            historyStore.addPairingEvent(board, white.name, black.name);
+            white.status = 'playing';
+            black.status = 'playing';
+            this.activeGames[board] = {white, black};
         },
 
         addBoard() {
             const queueStore = useQueueStore();
-            useHistoryStore().saveState();
-            this.activeGames.push({white: queueStore.dequeue(), black: queueStore.dequeue()});
+            const historyStore = useHistoryStore();
+
+            historyStore.saveState();
+            const nextBoardIndex = this.activeGames.length;
+            historyStore.addBoardEvent(nextBoardIndex);
+            const white = queueStore.dequeue(nextBoardIndex);
+            const black = queueStore.dequeue(nextBoardIndex);
+            this.pair(nextBoardIndex, white, black);
         },
 
-        removePlayerFromGame(removedPlayer) {
+        removePlayerFromGame(player) {
             const queueStore = useQueueStore();
 
             const boardIndex = this.activeGames.findIndex(
-                g => g.white.name === removedPlayer.name || g.black.name === removedPlayer.name
+                g => g.white.name === player.name || g.black.name === player.name
             );
 
             if (boardIndex === -1) return;
 
             const game = this.activeGames[boardIndex];
-            if (this.shouldRemoveBoardDueToBalance()) {
-                const opponent = game.white.name === removedPlayer.name ? game.black : game.white;
-                queueStore.enqueueAtStart(opponent);
-                this.activeGames.splice(boardIndex, 1);
-                return;
+            const opponent = game.white.name === player.name ? game.black : game.white;
+            if (!this.shouldRemoveBoardDueToBalance(boardIndex, opponent)) {
+                const color = game.white.name === player.name ? 'white' : 'black';
+                game[color] = queueStore.dequeue(boardIndex);
             }
-
-            game[game.white.name === removedPlayer.name ? 'white' : 'black'] = queueStore.dequeue();
         },
 
-        shouldRemoveBoardDueToBalance() {
+        deleteBoard(index) {
+            const historyStore = useHistoryStore();
+
+            historyStore.deleteBoardEvent(index);
+            this.activeGames.splice(index, 1);
+        },
+
+        shouldRemoveBoardDueToBalance(boardIndex, opponent = null) {
             const queueStore = useQueueStore();
             const activePlayers = usePlayersStore().players.filter(p => p.status !== 'paused').length;
             const idealQueueSize = activePlayers - (Math.round(activePlayers / 3) * 2);
-            return queueStore.queue.length < idealQueueSize && this.activeGames.length > 1;
+            const shouldRemoveBoard = queueStore.queue.length < idealQueueSize && this.activeGames.length > 1;
+            if (shouldRemoveBoard) {
+                if (opponent) {
+                    queueStore.enqueueAtStart(opponent);
+                }
+                this.deleteBoard(boardIndex);
+            }
+            return shouldRemoveBoard;
         }
     }
 });

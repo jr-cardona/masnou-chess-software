@@ -26,7 +26,7 @@
       </b-button>
       <b-button size="lg"
                 variant="danger"
-                v-if="tournamentStore.status === 'inCourse' && tournamentStore.timer > 0"
+                v-if="tournamentStore.status === 'inCourse'"
                 class="mx-3"
                 @click="confirmEndTournament"
       >
@@ -58,6 +58,7 @@
         <div class="col-md-6 d-flex flex-column align-items-center px-4">
           <div class="w-100">
             <GameList/>
+            <EventsHistory></EventsHistory>
           </div>
         </div>
       </div>
@@ -79,6 +80,7 @@ import {useSettingsStore} from '../stores/useSettingsStore';
 import {useHistoryStore} from '../stores/useHistoryStore';
 import {useI18n} from 'vue-i18n';
 import {onMounted} from 'vue';
+import EventsHistory from "./EventsHistory.vue";
 
 const {t} = useI18n({useScope: 'global'})
 const tournamentStore = useTournamentStore();
