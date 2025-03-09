@@ -12,68 +12,74 @@ export const useGamesStore = defineStore('gamesStore', {
     actions: {
         processResult(board, winner, loser) {
             useHistoryStore().saveState();
-            const {white, black} = this.activeGames[board];
+            const whiteName = this.activeGames[board].white.name;
+            const blackName = this.activeGames[board].black.name;
 
             if (winner === null && loser === null) {
-                return this.draw(board, white, black);
+                return this.draw(board, whiteName, blackName);
             }
 
-            this.handleWin(board, winner, loser, white);
-
+            this.handleWin(board, winner, loser, whiteName);
         },
 
-        handleWin(board, winner, loser, white) {
+        handleWin(board, winner, loser, whiteName) {
             const playersStore = usePlayersStore();
             const queueStore = useQueueStore();
-            const winnerPlayer = playersStore.players.find(p => p.name === winner.name);
-            const loserPlayer = playersStore.players.find(p => p.name === loser.name);
+            const settingsStore = useSettingsStore();
+
+            const playersMap = new Map(playersStore.players.map(p => [p.name, p]));
+            const winnerPlayer = playersMap.get(winner.name);
+            const loserPlayer = playersMap.get(loser.name);
             winnerPlayer.points += 1;
             winnerPlayer.wins += 1;
             winnerPlayer.consecutiveWins += 1;
-            loserPlayer.consecutiveWins = 0;
-            queueStore.enqueue(loser);
-            this.getOpponent(board, winner, this.shouldWinnerPlayWhite(winner === white));
+
+            const winLimit = settingsStore.settings.maxWins;
+
+            if (winLimit !== 'unlimited' && winnerPlayer.consecutiveWins >= parseInt(winLimit, 10)) {
+                queueStore.enqueue(winnerPlayer);
+                queueStore.enqueue(loserPlayer);
+                this.getOpponent(board, null, null);
+                return;
+            }
+            queueStore.enqueue(loserPlayer);
+            this.getOpponent(board, winnerPlayer, this.shouldWinnerPlayWhite(winnerPlayer.name === whiteName));
         },
 
-        draw(board, white, black) {
+        draw(board, whiteName, blackName) {
             const queueStore = useQueueStore();
             const settingsStore = useSettingsStore();
             const playersStore = usePlayersStore();
 
-            const whitePlayer = playersStore.players.find(p => p.name === white.name);
-            const blackPlayer = playersStore.players.find(p => p.name === black.name);
+            const playersMap = new Map(playersStore.players.map(p => [p.name, p]));
+            const whitePlayer = playersMap.get(whiteName);
+            const blackPlayer = playersMap.get(blackName);
             whitePlayer.points += 0.5;
             blackPlayer.points += 0.5;
-            whitePlayer.consecutiveWins = 0;
-            blackPlayer.consecutiveWins = 0;
 
             switch (settingsStore.settings.drawScenario) {
                 case 'bothOut':
-                    queueStore.enqueue(black);
-                    queueStore.enqueue(white);
+                    queueStore.enqueue(blackPlayer);
+                    queueStore.enqueue(whitePlayer);
                     this.getOpponent(board, null, null);
                     break;
                 case 'whiteOut':
-                    queueStore.enqueue(white);
-                    this.getOpponent(board, black, this.shouldWinnerPlayWhite(false));
+                    queueStore.enqueue(whitePlayer);
+                    blackPlayer.consecutiveWins = 0;
+                    this.getOpponent(board, blackPlayer, this.shouldWinnerPlayWhite(false));
                     break;
             }
         },
 
         shouldWinnerPlayWhite(winnerWasWhite) {
             const winnerColorSetting = useSettingsStore().settings.winnerColor;
-            switch (winnerColorSetting) {
-                case 'alwaysWhite':
-                    return true;
-                case 'alwaysBlack':
-                    return false;
-                case 'repeat':
-                    return winnerWasWhite;
-                case 'changes':
-                    return !winnerWasWhite;
-                default:
-                    return winnerWasWhite;
-            }
+            const winnerColorRules = {
+                alwaysWhite: true,
+                alwaysBlack: false,
+                repeat: winnerWasWhite,
+                changes: !winnerWasWhite
+            };
+            return winnerColorRules[winnerColorSetting] ?? winnerWasWhite;
         },
 
         getOpponent(board, winner, shouldWinnerPlayWhite) {
@@ -105,6 +111,7 @@ export const useGamesStore = defineStore('gamesStore', {
                 this.activeGames.splice(board, 1);
                 return;
             }
+
             this.activeGames[board] = shouldWinnerPlayWhite
                 ? {white: winner, black: queueStore.dequeue()}
                 : {white: queueStore.dequeue(), black: winner};
@@ -113,38 +120,27 @@ export const useGamesStore = defineStore('gamesStore', {
         addBoard() {
             const queueStore = useQueueStore();
             useHistoryStore().saveState();
-            const white = queueStore.dequeue();
-            const black = queueStore.dequeue();
-            white.status = 'playing';
-            black.status = 'playing';
-            this.activeGames.push({white, black});
+            this.activeGames.push({white: queueStore.dequeue(), black: queueStore.dequeue()});
         },
 
-        removePlayerFromGame(player) {
+        removePlayerFromGame(removedPlayer) {
             const queueStore = useQueueStore();
 
             const boardIndex = this.activeGames.findIndex(
-                g => g.white.name === player.name || g.black.name === player.name
+                g => g.white.name === removedPlayer.name || g.black.name === removedPlayer.name
             );
 
             if (boardIndex === -1) return;
 
             const game = this.activeGames[boardIndex];
             if (this.shouldRemoveBoardDueToBalance()) {
-                const opponent = game.white.name === player.name ? game.black : game.white;
+                const opponent = game.white.name === removedPlayer.name ? game.black : game.white;
                 queueStore.enqueueAtStart(opponent);
                 this.activeGames.splice(boardIndex, 1);
                 return;
             }
 
-            const nextPlayer = queueStore.dequeue();
-
-            if (game.white.name === player.name) {
-                game.white = nextPlayer;
-            }
-            if (game.black.name === player.name) {
-                game.black = nextPlayer;
-            }
+            game[game.white.name === removedPlayer.name ? 'white' : 'black'] = queueStore.dequeue();
         },
 
         shouldRemoveBoardDueToBalance() {

@@ -7,6 +7,7 @@ export const useQueueStore = defineStore('queueStore', {
     actions: {
         enqueue(player) {
             player.status = 'queued';
+            player.consecutiveWins = 0;
             this.queue.push(player);
         },
 
