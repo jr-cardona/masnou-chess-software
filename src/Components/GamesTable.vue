@@ -23,17 +23,17 @@
         <div class="text-center">
           <b-button-group v-if="tournamentStore.status === 'inCourse'">
             <b-button :title="t('whiteWins')" class="mx-1" size="sm" variant="light"
-                      @click="gamesStore.processResult(data.index, 'white')">
+                      @click="gamesStore.processResult(data.index, data.item.white, data.item.black)">
               <WhiteKingIcon></WhiteKingIcon>
               1 — 0
             </b-button>
             <b-button :title="t('draw')" class="mx-1" size="sm" variant="warning"
-                      @click="gamesStore.processResult(data.index, 'draw')">
+                      @click="gamesStore.processResult(data.index, null, null)">
               <DrawIcon></DrawIcon>
               ½ — ½
             </b-button>
             <b-button :title="t('blackWins')" class="mx-1" size="sm" variant="secondary"
-                      @click="gamesStore.processResult(data.index, 'black')">
+                      @click="gamesStore.processResult(data.index, data.item.black, data.item.white)">
               <BlackKingIcon></BlackKingIcon>
               0 — 1
             </b-button>

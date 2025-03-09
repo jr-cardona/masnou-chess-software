@@ -14,7 +14,7 @@
     </template>
     <b-tabs pills vertical nav-wrapper-class="w-35">
       <!-- Language -->
-      <b-tab>
+      <b-tab active>
         <template #title>
           <i class="bi bi-globe-americas me-1"></i> {{ t('language') }}
         </template>
@@ -41,18 +41,8 @@
           </div>
         </div>
       </b-tab>
-      <!-- Appearance -->
-      <b-tab>
-        <template #title>
-          <i class="bi bi-brush"></i> {{ t('appearance') }}
-        </template>
-        <b-form-group :label="t('theme')">
-          <b-form-radio v-model="theme" value="dark">Oscuro</b-form-radio>
-          <b-form-radio v-model="theme" value="light">Claro</b-form-radio>
-        </b-form-group>
-      </b-tab>
       <!-- Tournament Settings -->
-      <b-tab active>
+      <b-tab>
         <template #title>
           <i class="bi bi-sliders me-1"></i> {{ t('generalSettings') }}
         </template>
@@ -136,21 +126,23 @@ const languages = [
   {value: 'pt', text: 'Português'},
   {value: 'cn', text: '中文'},
 ];
-const winnerOptions = [
+const winnerOptions = computed(() => [
   {value: 'changes', text: t('changesColor')},
   {value: 'repeats', text: t('repeatsColor')},
-];
-const winLimitOptions = [
+  {value: 'alwaysWhite', text: t('alwaysWhite')},
+  {value: 'alwaysBlack', text: t('alwaysBlack')},
+]);
+const winLimitOptions = computed(() => [
   {value: 'unlimited', text: t('unlimited')},
   {value: '3', text: '3'},
   {value: '4', text: '4'},
   {value: '5', text: '5'},
   {value: '6', text: '6'},
-];
-const drawOptions = [
+]);
+const drawOptions = computed(() => [
   {value: 'whiteOut', text: t('whiteSitsOut')},
   {value: 'bothOut', text: t('bothSitOut')},
-];
+]);
 const isFormValid = computed(() => {
   return Object.values(settingsStore.settings).every(val => val !== '' && val !== null);
 });
