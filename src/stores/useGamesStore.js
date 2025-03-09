@@ -1,9 +1,9 @@
 import {defineStore} from 'pinia';
-import {useHistoryStore} from "./useHistoryStore";
-import {usePlayersStore} from "./usePlayersStore";
-import {useQueueStore} from "./useQueueStore";
-import {useTournamentStore} from "./useTournamentStore";
-import {useSettingsStore} from "./useSettingsStore";
+import {useHistoryStore} from './useHistoryStore';
+import {usePlayersStore} from './usePlayersStore';
+import {useQueueStore} from './useQueueStore';
+import {useTournamentStore} from './useTournamentStore';
+import {useSettingsStore} from './useSettingsStore';
 
 export const useGamesStore = defineStore('gamesStore', {
     state: () => ({

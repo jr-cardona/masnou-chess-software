@@ -1,6 +1,6 @@
 <template>
   <div class="mt-4">
-    <b-badge :variant="tournamentStore.timer <= 90 ? 'danger' : 'primary'" class="timer-badge w-100 p-3">
+    <b-badge :variant="tournamentStore.timer <= 300 ? 'danger' : 'primary'" class="timer-badge w-100 p-3">
       {{ formattedTime }}
     </b-badge>
   </div>

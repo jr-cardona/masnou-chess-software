@@ -24,6 +24,14 @@
       >
         <i class="bi bi-play"></i> {{ t('resume') }}
       </b-button>
+      <b-button size="lg"
+                variant="danger"
+                v-if="tournamentStore.status === 'inCourse' && tournamentStore.timer > 0"
+                class="mx-3"
+                @click="confirmEndTournament"
+      >
+        <i class="bi bi-play"></i> {{ t('finish') }}
+      </b-button>
     </div>
     <div v-if="tournamentStore.status === 'finished'" class="d-flex justify-content-center align-items-center">
       <PlayersList class="fs-1 w-75"/>
@@ -76,6 +84,24 @@ const {t} = useI18n({useScope: 'global'})
 const tournamentStore = useTournamentStore();
 const settingsStore = useSettingsStore();
 const historyStore = useHistoryStore();
+
+const confirmEndTournament = () => {
+  Swal.fire({
+    title: t('areYouSure'),
+    text: t('thisWillEndTournament'),
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: t('confirm'),
+    cancelButtonText: t('cancel')
+  }).then((result) => {
+    if (result.isConfirmed) {
+      tournamentStore.endTournament();
+      Swal.fire(t('tournamentFinished'), '', 'success');
+    }
+  });
+};
 
 onMounted(() => {
   window.electron.ipcRenderer.on('open-settings', () => {

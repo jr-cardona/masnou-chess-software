@@ -2,6 +2,11 @@ import { createI18n } from 'vue-i18n';
 
 const messages = {
     us: {
+        areYouSure: "Are you sure?",
+        thisWillEndTournament: "This action will end the tournament",
+        confirm: "Yes, finish",
+        cancel: "Cancel",
+        tournamentFinished: "Tournament finished",
         active: "Active",
         addPlayer: "Add Player",
         addTestData: "Add test data",
@@ -77,6 +82,11 @@ const messages = {
         yes: "Yes",
     },
     es: {
+        areYouSure: "¿Estás seguro?",
+        thisWillEndTournament: "Esta acción finalizará el torneo",
+        confirm: "Sí, finalizar",
+        cancel: "Cancelar",
+        tournamentFinished: "Torneo finalizado",
         active: "Activo",
         addPlayer: "Añadir jugador",
         addTestData: "Añadir datos de prueba",
@@ -152,6 +162,11 @@ const messages = {
         yes: "Sí",
     },
     pt: {
+        areYouSure: "Tem certeza?",
+        thisWillEndTournament: "Esta ação finalizará o torneio",
+        confirm: "Sim, finalizar",
+        cancel: "Cancelar",
+        tournamentFinished: "Torneio finalizado",
         active: "Ativo",
         addPlayer: "Adicionar jogador",
         addTestData: "Adicionar dados de teste",
@@ -227,6 +242,11 @@ const messages = {
         yes: "Sim",
     },
     cn: {
+        areYouSure: "你确定吗？",
+        thisWillEndTournament: "此操作将结束比赛",
+        confirm: "是的，结束",
+        cancel: "取消",
+        tournamentFinished: "比赛已结束",
         active: "活跃",
         addPlayer: "添加玩家",
         addTestData: "添加测试数据",
