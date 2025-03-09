@@ -19,40 +19,50 @@ export const usePlayersStore = defineStore('playersStore', {
             const tournamentStore = useTournamentStore();
             if (tournamentStore.status === 'inCourse' || tournamentStore.status === 'paired') {
                 const queueStore = useQueueStore();
-                queueStore.enqueue(newPlayer);
+                queueStore.enqueue(newPlayer, 'tournamentInCourse');
             }
         },
 
         removePlayer(player) {
             useHistoryStore().saveState();
             this.players = this.players.filter(p => p.name !== player.name);
-            const queueStore = useQueueStore();
-            queueStore.removeFromQueue(player);
         },
 
         pausePlayer(player) {
-            if (!player) return;
-
             const queueStore = useQueueStore();
-            const gameStore = useGamesStore();
-            useHistoryStore().saveState();
+            const historyStore = useHistoryStore();
+            historyStore.saveState();
+            historyStore.addPausePlayerEvent(player.name);
 
             switch (player.status) {
                 case 'playing':
-                    gameStore.removePlayerFromGame(player);
+                    const gameStore = useGamesStore();
+                    const boardIndex = gameStore.activeGames.findIndex(
+                        g => g.white.name === player.name || g.black.name === player.name
+                    );
+
+                    if (boardIndex === -1) return;
+
+                    const game = gameStore.activeGames[boardIndex];
+                    if (gameStore.shouldRemoveBoardDueToBalance()) {
+                        const opponent = game.white.name === player.name ? game.black : game.white;
+                        queueStore.enqueueAtStart(opponent);
+                        gameStore.deleteBoard(boardIndex);
+                    } else {
+                        game[game.white.name === player.name ? 'white' : 'black'] = queueStore.dequeue(boardIndex);
+                    }
                     break;
                 case 'queued':
-                    queueStore.removeFromQueue(player);
+                    queueStore.queue = queueStore.queue.filter(p => p.name !== player.name);
                     break;
             }
-
             player.status = 'paused';
         },
 
         resumePlayer(player) {
             const queueStore = useQueueStore();
             useHistoryStore().saveState();
-            queueStore.enqueue(player);
+            queueStore.enqueue(player, 'resume');
         },
 
         addTestData() {

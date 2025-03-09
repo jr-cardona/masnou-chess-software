@@ -33,16 +33,11 @@ export const useTournamentStore = defineStore('tournamentStore', {
             const playersInQueue = playersStore.players.slice(playersSize);
             for (let i = 0; i < playersInGames.length; i += 2) {
                 if (playersInGames[i + 1]) {
-                    gamesStore.activeGames[i / 2] = {
-                        white: playersInGames[i],
-                        black: playersInGames[i + 1]
-                    };
-                    playersInGames[i].status = 'playing';
-                    playersInGames[i + 1].status = 'playing';
+                    gamesStore.pair(i / 2, playersInGames[i], playersInGames[i + 1]);
                 }
             }
             for (let i = 0; i < playersInQueue.length; i++) {
-                queueStore.enqueue(playersInQueue[i]);
+                queueStore.enqueue(playersInQueue[i], 'initialPairing');
             }
 
             this.status = 'paired';

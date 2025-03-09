@@ -11,18 +11,27 @@ export const useGamesStore = defineStore('gamesStore', {
     }),
     actions: {
         processResult(board, winner, loser) {
-            useHistoryStore().saveState();
+            const historyStore = useHistoryStore();
+
+            historyStore.saveState();
             const whiteName = this.activeGames[board].white.name;
             const blackName = this.activeGames[board].black.name;
 
             if (winner === null && loser === null) {
+                historyStore.addMatchResultEvent(board, whiteName, blackName, '½-½');
                 return this.draw(board, whiteName, blackName);
             }
 
-            this.handleWin(board, winner, loser, whiteName);
+            let whiteWon = false;
+            if (winner.name === whiteName) {
+                whiteWon = true;
+            }
+            const result = whiteWon ? '1 - 0' : '0 - 1';
+            historyStore.addMatchResultEvent(board, whiteName, blackName, result);
+            this.handleWin(board, winner, loser, whiteWon);
         },
 
-        handleWin(board, winner, loser, whiteName) {
+        handleWin(board, winner, loser, whiteWon) {
             const playersStore = usePlayersStore();
             const queueStore = useQueueStore();
             const settingsStore = useSettingsStore();
@@ -37,13 +46,13 @@ export const useGamesStore = defineStore('gamesStore', {
             const winLimit = settingsStore.settings.maxWins;
 
             if (winLimit !== 'unlimited' && winnerPlayer.consecutiveWins >= parseInt(winLimit, 10)) {
-                queueStore.enqueue(winnerPlayer);
+                queueStore.enqueue(winnerPlayer, 'win_limit');
                 queueStore.enqueue(loserPlayer);
                 this.getOpponent(board, null, null);
                 return;
             }
             queueStore.enqueue(loserPlayer);
-            this.getOpponent(board, winnerPlayer, this.shouldWinnerPlayWhite(winnerPlayer.name === whiteName));
+            this.getOpponent(board, winnerPlayer, this.shouldWinnerPlayWhite(whiteWon));
         },
 
         draw(board, whiteName, blackName) {
@@ -59,27 +68,27 @@ export const useGamesStore = defineStore('gamesStore', {
 
             switch (settingsStore.settings.drawScenario) {
                 case 'bothOut':
-                    queueStore.enqueue(blackPlayer);
-                    queueStore.enqueue(whitePlayer);
+                    queueStore.enqueue(blackPlayer, 'bothOutInDraw');
+                    queueStore.enqueue(whitePlayer, 'bothOutInDraw');
                     this.getOpponent(board, null, null);
                     break;
                 case 'whiteOut':
-                    queueStore.enqueue(whitePlayer);
+                    queueStore.enqueue(whitePlayer, 'whiteOutInDraw');
                     blackPlayer.consecutiveWins = 0;
                     this.getOpponent(board, blackPlayer, this.shouldWinnerPlayWhite(false));
                     break;
             }
         },
 
-        shouldWinnerPlayWhite(winnerWasWhite) {
+        shouldWinnerPlayWhite(whiteWon) {
             const winnerColorSetting = useSettingsStore().settings.winnerColor;
             const winnerColorRules = {
                 alwaysWhite: true,
                 alwaysBlack: false,
-                repeat: winnerWasWhite,
-                changes: !winnerWasWhite
+                repeat: whiteWon,
+                changes: !whiteWon
             };
-            return winnerColorRules[winnerColorSetting] ?? winnerWasWhite;
+            return winnerColorRules[winnerColorSetting] ?? whiteWon;
         },
 
         getOpponent(board, winner, shouldWinnerPlayWhite) {
@@ -90,7 +99,7 @@ export const useGamesStore = defineStore('gamesStore', {
             playersStore.players.sort((a, b) => b.points - a.points || b.wins - a.wins);
 
             if (tournamentStore.timer <= 0) {
-                this.activeGames.splice(board, 1);
+                this.deleteBoard(board);
                 if (this.activeGames.length === 0) {
                     tournamentStore.endTournament();
                 }
@@ -99,48 +108,52 @@ export const useGamesStore = defineStore('gamesStore', {
 
             if (!winner) {
                 if (this.shouldRemoveBoardDueToBalance()) {
-                    this.activeGames.splice(board, 1);
+                    this.deleteBoard(board);
                     return;
                 }
-                this.activeGames[board] = {white: queueStore.dequeue(), black: queueStore.dequeue()};
+                this.pair(board, queueStore.dequeue(board), queueStore.dequeue(board));
                 return;
             }
 
             if (this.shouldRemoveBoardDueToBalance()) {
                 queueStore.enqueueAtStart(winner);
-                this.activeGames.splice(board, 1);
+                this.deleteBoard(board);
                 return;
             }
 
-            this.activeGames[board] = shouldWinnerPlayWhite
-                ? {white: winner, black: queueStore.dequeue()}
-                : {white: queueStore.dequeue(), black: winner};
+            if (shouldWinnerPlayWhite) {
+                this.pair(board, winner, queueStore.dequeue(board));
+                return;
+            }
+            this.pair(board, queueStore.dequeue(board), winner);
+        },
+
+        pair(board, white, black) {
+            const historyStore = useHistoryStore();
+
+            historyStore.addPairingEvent(board, white.name, black.name);
+            white.status = 'playing';
+            black.status = 'playing';
+            this.activeGames[board] = {white, black};
         },
 
         addBoard() {
             const queueStore = useQueueStore();
-            useHistoryStore().saveState();
-            this.activeGames.push({white: queueStore.dequeue(), black: queueStore.dequeue()});
+            const historyStore = useHistoryStore();
+
+            historyStore.saveState();
+            const nextBoardIndex = this.activeGames.length;
+            historyStore.addBoardEvent(nextBoardIndex);
+            const white = queueStore.dequeue(nextBoardIndex);
+            const black = queueStore.dequeue(nextBoardIndex);
+            this.pair(nextBoardIndex, white, black);
         },
 
-        removePlayerFromGame(removedPlayer) {
-            const queueStore = useQueueStore();
+        deleteBoard(index) {
+            const historyStore = useHistoryStore();
 
-            const boardIndex = this.activeGames.findIndex(
-                g => g.white.name === removedPlayer.name || g.black.name === removedPlayer.name
-            );
-
-            if (boardIndex === -1) return;
-
-            const game = this.activeGames[boardIndex];
-            if (this.shouldRemoveBoardDueToBalance()) {
-                const opponent = game.white.name === removedPlayer.name ? game.black : game.white;
-                queueStore.enqueueAtStart(opponent);
-                this.activeGames.splice(boardIndex, 1);
-                return;
-            }
-
-            game[game.white.name === removedPlayer.name ? 'white' : 'black'] = queueStore.dequeue();
+            historyStore.deleteBoardEvent(index);
+            this.activeGames.splice(index, 1);
         },
 
         shouldRemoveBoardDueToBalance() {
