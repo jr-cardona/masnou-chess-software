@@ -7,11 +7,12 @@
 </template>
 
 <script setup>
-import {computed, onMounted} from 'vue';
+import {computed, onMounted, onUnmounted, ref} from 'vue';
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {BBadge} from 'bootstrap-vue-3';
 
 const tournamentStore = useTournamentStore();
+let intervalId = ref(null);
 
 const formattedTime = computed(() => {
   const hours = Math.floor(tournamentStore.timer / 3600);
@@ -22,11 +23,20 @@ const formattedTime = computed(() => {
 });
 
 onMounted(() => {
-  setInterval(() => {
-    if (tournamentStore.status === 'inCourse') {
-      tournamentStore.decreaseTimer();
-    }
-  }, 1000);
+  if (!intervalId.value) {
+    intervalId.value = setInterval(() => {
+      if (tournamentStore.status === 'inCourse') {
+        tournamentStore.decreaseTimer();
+      }
+    }, 1000);
+  }
+});
+
+onUnmounted(() => {
+  if (intervalId.value) {
+    clearInterval(intervalId.value);
+    intervalId.value = null;
+  }
 });
 </script>
 

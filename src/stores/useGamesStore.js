@@ -42,6 +42,7 @@ export const useGamesStore = defineStore('gamesStore', {
             winnerPlayer.points += 1;
             winnerPlayer.wins += 1;
             winnerPlayer.consecutiveWins += 1;
+            loserPlayer.losses += 1;
 
             const winLimit = settingsStore.settings.maxWins;
 
@@ -64,7 +65,9 @@ export const useGamesStore = defineStore('gamesStore', {
             const whitePlayer = playersMap.get(whiteName);
             const blackPlayer = playersMap.get(blackName);
             whitePlayer.points += 0.5;
+            whitePlayer.draws += 1;
             blackPlayer.points += 0.5;
+            blackPlayer.draws += 1;
 
             switch (settingsStore.settings.drawScenario) {
                 case 'bothOut':

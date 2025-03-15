@@ -30,7 +30,7 @@
                 class="mx-3"
                 @click="confirmEndTournament"
       >
-        <i class="bi bi-play"></i> {{ t('finish') }}
+        <i class="bi bi-exclamation-triangle-fill"></i> {{ t('finish') }}
       </b-button>
     </div>
     <div v-if="tournamentStore.status === 'finished'" class="d-flex justify-content-center align-items-center">
