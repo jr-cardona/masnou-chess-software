@@ -25,9 +25,15 @@
         <i class="bi bi-play"></i> {{ t('resume') }}
       </b-button>
       <b-button size="lg"
+                variant="primary"
+                class="mx-3"
+                @click="openTimer"
+      >
+        <i class="bi bi-clock"></i> {{ t('openTimer') }}
+      </b-button>
+      <b-button size="lg"
                 variant="danger"
                 v-if="tournamentStore.status === 'inCourse'"
-                class="mx-3"
                 @click="confirmEndTournament"
       >
         <i class="bi bi-exclamation-triangle-fill"></i> {{ t('finish') }}
@@ -38,28 +44,19 @@
     </div>
 
     <div v-else>
-      <div class="d-flex flex-column flex-md-row mt-2 position-relative">
-        <div class="col-md-3 px-4">
-          <AddPlayer v-if="tournamentStore.timer > 0"/>
-        </div>
-        <div class="col-md-6 d-flex flex-column align-items-center px-4">
-          <div class="w-100">
-            <TournamentTimer/>
-          </div>
-        </div>
-        <div class="col-md-3 px-4 d-flex flex-column position-absolute end-0">
-          <PlayersList class="flex-grow-1 overflow-auto"/>
-        </div>
-      </div>
       <div class="d-flex flex-column flex-md-row mt-2">
         <div class="col-md-3 px-4">
           <QueuePlayers v-if="tournamentStore.timer > 0"/>
+          <AddPlayer v-if="tournamentStore.timer > 0"/>
         </div>
         <div class="col-md-6 d-flex flex-column align-items-center px-4">
           <div class="w-100">
             <GameList/>
             <EventsHistory></EventsHistory>
           </div>
+        </div>
+        <div class="col-md-3 px-4 d-flex flex-column">
+          <PlayersList class="flex-grow-1 overflow-auto"/>
         </div>
       </div>
     </div>
@@ -86,6 +83,10 @@ const {t} = useI18n({useScope: 'global'})
 const tournamentStore = useTournamentStore();
 const settingsStore = useSettingsStore();
 const historyStore = useHistoryStore();
+
+const openTimer = () => {
+  window.electron.ipcRenderer.send('open-timer-window', tournamentStore.timer);
+};
 
 const confirmEndTournament = () => {
   Swal.fire({

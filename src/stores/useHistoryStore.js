@@ -89,7 +89,7 @@ export const useHistoryStore = defineStore('historyStore', {
             tournamentStore.status = prevState.status;
             this.events = prevState.events;
             if (prevState.timer !== undefined) {
-                tournamentStore.timer = prevState.timer;
+                tournamentStore.setTimer(prevState.timer);
             }
         },
     }

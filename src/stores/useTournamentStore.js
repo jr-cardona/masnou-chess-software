@@ -52,6 +52,7 @@ export const useTournamentStore = defineStore('tournamentStore', {
             if (this.status !== 'paired') return;
             useHistoryStore().saveState({timer: this.timer});
             this.status = 'inCourse';
+            this.startTimer();
         },
 
         pauseTournament() {
@@ -72,10 +73,17 @@ export const useTournamentStore = defineStore('tournamentStore', {
             this.status = 'finished';
         },
 
-        decreaseTimer() {
-            if (this.timer > 0) {
-                this.timer--;
-            }
+        setTimer(seconds) {
+            this.timer = seconds;
+            window.electron.ipcRenderer.send('update-timer', this.timer);
         },
+
+        startTimer() {
+            setInterval(() => {
+                if (this.status === 'inCourse' && this.timer > 0) {
+                    this.setTimer(this.timer - 1);
+                }
+            }, 1000);
+        }
     },
 });

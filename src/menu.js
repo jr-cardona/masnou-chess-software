@@ -1,4 +1,4 @@
-import {BrowserWindow, Menu} from 'electron';
+import {Menu} from 'electron';
 
 const template = [
     {

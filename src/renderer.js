@@ -1,7 +1,3 @@
-/**
- * This file will automatically be loaded by vite and run in the "renderer" context.
- */
-
 import './index.css';
 import './fonts.css';
 import {createApp} from 'vue';

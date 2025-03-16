@@ -19,7 +19,7 @@ export const useSettingsStore = defineStore('settings', {
             const tournamentStore = useTournamentStore();
             if (tournamentStore.status === 'idle') {
                 localStorage.setItem('tournament.settings', JSON.stringify(this.settings));
-                tournamentStore.timer = this.calculateSeconds();
+                tournamentStore.setTimer(this.calculateSeconds());
             }
             this.showModal = false;
         },
@@ -29,7 +29,7 @@ export const useSettingsStore = defineStore('settings', {
             const tournamentStore = useTournamentStore();
             if (savedSettings) {
                 this.settings = {...this.settings, ...savedSettings};
-                tournamentStore.timer = this.calculateSeconds();
+                tournamentStore.setTimer(this.calculateSeconds());
             }
         },
 
