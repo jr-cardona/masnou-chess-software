@@ -39,9 +39,9 @@
       <b-button size="md"
                 class="me-3"
                 variant="success"
-                @click="historyStore.saveManualState()"
+                @click="saveTournament"
       >
-        <i class="bi bi-floppy-fill me-1"></i> {{ t("save") }}
+        <i class="bi bi-floppy-fill me-1"></i> {{ t('save') }}
       </b-button>
     </div>
     <div v-if="tournamentStore.status === 'finished'" class="d-flex justify-content-center align-items-center">
@@ -107,6 +107,11 @@ const confirmEndTournament = () => {
       Swal.fire(t('tournamentFinished'), '', 'success');
     }
   });
+};
+
+const saveTournament = () => {
+  historyStore.saveManualState();
+  Swal.fire(t('tournamentSaved'), '', 'success');
 };
 
 onMounted(async () => {

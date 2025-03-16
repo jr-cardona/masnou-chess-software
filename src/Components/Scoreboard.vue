@@ -19,11 +19,12 @@
 import {usePlayersStore} from '../stores/usePlayersStore';
 import {BTable} from 'bootstrap-vue-3';
 import {useI18n} from 'vue-i18n';
+import {computed} from "vue";
 
 const {t} = useI18n({useScope: 'global'});
 const playersStore = usePlayersStore();
 
-const finalFields = [
+const finalFields = computed(() => [
   {key: 'rank', label: t('position'), class: 'text-center'},
   {key: 'name', label: t('name')},
   {key: 'points', label: t('point', 2), class: 'text-center'},
@@ -32,5 +33,5 @@ const finalFields = [
   {key: 'losses', label: t('losses'), class: 'text-center'},
   {key: 'gamesPlayed', label: t('game', 2), class: 'text-center'},
   {key: 'winRate', label: 'Win%', class: 'text-center'},
-];
+]);
 </script>
