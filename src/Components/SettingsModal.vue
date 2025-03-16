@@ -3,11 +3,11 @@
            size="lg"
            body-bg-variant="dark"
            header-bg-variant="dark"
-           centered
-           hide-footer
-           no-close-on-esc
-           hide-header-close
-           no-close-on-backdrop
+           centered="true"
+           hide-footer="true"
+           no-close-on-esc="true"
+           hide-header-close="true"
+           no-close-on-backdrop="true"
   >
     <template #title>
       <i class="bi bi-trophy me-1"></i> {{ t('tournamentSettings') }}
@@ -94,7 +94,7 @@
         </b-form-group>
       </b-tab>
     </b-tabs>
-    <!-- Botones de acción -->
+    <!-- Action buttons -->
     <div class="justify-content-between d-flex mt-3">
       <b-button variant="secondary" @click="settingsStore.resetSettings" class="w-25">
         <i class="bi bi-arrow-counterclockwise"></i> {{ t('reset') }}

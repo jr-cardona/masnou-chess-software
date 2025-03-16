@@ -1,6 +1,7 @@
 <template>
   <div class='container-full'>
     <SettingsModal></SettingsModal>
+    <StatsModal v-model:show="showReportsModal"></StatsModal>
     <div class="d-flex align-items-center justify-content-center">
       <h1 v-if="tournamentStore.status !== 'finished'" class="me-3">{{ settingsStore.settings.tournamentName }}</h1>
       <b-button size="md"
@@ -21,18 +22,26 @@
       </b-button>
       <b-button size="md"
                 class="me-3"
-                variant="success"
+                variant="primary"
                 v-if="tournamentStore.status === 'stopped'"
                 @click="tournamentStore.resumeTournament"
       >
         <i class="bi bi-play"></i> {{ t('resume') }}
       </b-button>
       <b-button size="md"
+                class="me-3"
                 variant="danger"
                 v-if="tournamentStore.status === 'inCourse' || tournamentStore.status === 'stopped'"
                 @click="confirmEndTournament"
       >
         <i class="bi bi-exclamation-triangle-fill"></i> {{ t('finish') }}
+      </b-button>
+      <b-button size="md"
+                class="me-3"
+                variant="success"
+                @click="showReportsModal = true"
+      >
+        <i class="bi bi-bar-chart-fill"></i> {{ t("statistics") }}
       </b-button>
     </div>
     <div v-if="tournamentStore.status === 'finished'" class="d-flex justify-content-center align-items-center">
@@ -50,7 +59,6 @@
         <div class="col-md-6 d-flex flex-column align-items-center px-4">
           <div class="w-100">
             <GameList/>
-            <EventsHistory></EventsHistory>
           </div>
         </div>
         <div class="col-md-3 px-4 d-flex flex-column">
@@ -63,9 +71,10 @@
 
 <script setup>
 import AddPlayer from '../Components/AddPlayer.vue';
-import PlayersList from './PlayersTable.vue';
 import GameList from './GamesTable.vue';
+import PlayersList from './PlayersTable.vue';
 import QueuePlayers from './QueuePlayers.vue';
+import StatsModal from './StatsModal.vue';
 import SettingsModal from './SettingsModal.vue';
 import Swal from 'sweetalert2';
 import {BButton} from 'bootstrap-vue-3';
@@ -73,9 +82,9 @@ import {useTournamentStore} from '../stores/useTournamentStore';
 import {useSettingsStore} from '../stores/useSettingsStore';
 import {useHistoryStore} from '../stores/useHistoryStore';
 import {useI18n} from 'vue-i18n';
-import {onMounted} from 'vue';
-import EventsHistory from "./EventsHistory.vue";
+import {onMounted, ref} from 'vue';
 
+const showReportsModal = ref(false);
 const {t} = useI18n({useScope: 'global'})
 const tournamentStore = useTournamentStore();
 const settingsStore = useSettingsStore();

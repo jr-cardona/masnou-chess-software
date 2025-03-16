@@ -2,26 +2,7 @@
   <div class="mt-3">
     <div v-if="tournamentStore.status === 'finished'">
       <div class="text-center text-warning fw-bold"><i class="bi bi-trophy p-2"></i> {{ t('finalRanking') }}</div>
-      <b-table
-          :items="playersStore.players"
-          :fields="finalFields"
-          class="custom-table text-center mt-3"
-          striped
-          hover
-      >
-        <template #cell(rank)="data">
-          <strong>#{{ data.index + 1 }}</strong>
-        </template>
-        <template #cell(name)="data">
-          {{ data.item.name }}
-        </template>
-        <template #cell(points)="data">
-          <strong>{{ data.item.points }}</strong>
-        </template>
-        <template #cell(wins)="data">
-          <strong>{{ data.item.wins || 0 }}</strong>
-        </template>
-      </b-table>
+      <Scoreboard></Scoreboard>
     </div>
     <div v-else>
       <h3 class="text-center text-warning"><i class="bi bi-trophy p-2"></i> {{ t('scoreboard') }}</h3>
@@ -103,6 +84,7 @@ import {useTournamentStore} from '../stores/useTournamentStore';
 import {BTable, BButton} from 'bootstrap-vue-3';
 import {useI18n} from 'vue-i18n';
 import {computed, ref} from 'vue';
+import Scoreboard from "./Scoreboard.vue";
 
 const {t} = useI18n({useScope: 'global'})
 const playersStore = usePlayersStore();
@@ -136,11 +118,5 @@ const fields = [
   {key: 'points', label: t('point', 2), class: 'text-center'},
   {key: 'status', label: t('status')},
   {key: 'actions', label: '', class: 'text-center'}
-];
-const finalFields = [
-  {key: 'rank', label: t('position'), class: 'text-center'},
-  {key: 'name', label: t('name')},
-  {key: 'points', label: t('point', 2), class: 'text-center'},
-  {key: 'wins', label: t('wins'), class: 'text-center'},
 ];
 </script>
