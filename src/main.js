@@ -8,7 +8,7 @@ if (started) {
     app.quit();
 }
 
-const saveFilePath = path.dirname(app.getPath('exe'));
+const saveFilePath = app.getPath('userData');
 let mainWindow = null;
 let timerWindow = null;
 
@@ -93,7 +93,7 @@ ipcMain.on('open-timer-window', (event, timerValue) => {
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         timerWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/timer.html`);
     } else {
-        timerWindow.loadFile(path.join(__dirname, '../renderer/timer.html'));
+        timerWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/timer.html`));
     }
 
     timerWindow.webContents.once('did-finish-load', () => {
@@ -142,8 +142,9 @@ ipcMain.on('save-tournament', (event, tournamentState) => {
 });
 
 ipcMain.handle('load-tournament', () => {
-    if (fs.existsSync(saveFilePath)) {
-        return JSON.parse(fs.readFileSync(path.join(saveFilePath, 'tournament.json'), 'utf-8'));
+    const filePath = path.join(saveFilePath, 'tournament.json');
+    if (fs.existsSync(filePath)) {
+        return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
     }
     return null;
 });
