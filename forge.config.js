@@ -10,7 +10,12 @@ module.exports = {
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        name: "CMM",
+        setupExe: "ChessMasnouManagement.exe",
+        setupIcon: "public/icon.ico",
+        noMsi: true,
+      }
     },
     {
       name: '@electron-forge/maker-zip',
