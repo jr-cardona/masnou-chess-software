@@ -9,7 +9,6 @@
       </ul>
     </li>
   </ul>
-  <pre>{{ historyStore.events }}</pre>
 </template>
 
 <script setup>

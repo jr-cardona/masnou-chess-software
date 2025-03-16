@@ -68,7 +68,6 @@ export const useTournamentStore = defineStore('tournamentStore', {
         },
 
         endTournament() {
-            if (this.status !== 'inCourse') return;
             useHistoryStore().saveState({timer: this.timer});
             this.status = 'finished';
         },

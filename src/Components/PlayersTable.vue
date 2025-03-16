@@ -31,8 +31,8 @@
           show-empty=""
           empty-text=""
           responsive
-          class="custom-table mt-3"
-          style="max-height: 1080px"
+          class="custom-table mt-3 fs-5"
+          style="max-height: 1200px"
       >
         <template #head(name)>
           <div class="d-flex align-items-center">
@@ -124,7 +124,7 @@ const getStatusText = (status) => {
 };
 const getStatusIcon = (status) => {
   const iconMap = {
-    playing: 'bi bi-hourglass-split',
+    playing: 'bi bi-play-fill',
     queued: 'bi bi-pause-circle',
     active: 'bi bi-check-circle',
     paused: 'bi bi-x-circle'
@@ -134,7 +134,7 @@ const getStatusIcon = (status) => {
 const fields = [
   {key: 'name', label: t('name')},
   {key: 'points', label: t('point', 2), class: 'text-center'},
-  {key: 'status', label: t('status'), class: 'text-center'},
+  {key: 'status', label: t('status')},
   {key: 'actions', label: '', class: 'text-center'}
 ];
 const finalFields = [

@@ -25,8 +25,8 @@ export const useSettingsStore = defineStore('settings', {
         },
 
         loadSettings() {
-            const savedSettings = JSON.parse(localStorage.getItem('tournament.settings'));
             const tournamentStore = useTournamentStore();
+            const savedSettings = JSON.parse(localStorage.getItem('tournament.settings'));
             if (savedSettings) {
                 this.settings = {...this.settings, ...savedSettings};
                 tournamentStore.setTimer(this.calculateSeconds());

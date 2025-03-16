@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3">
+  <div class="mt-5">
     <h3 class="text-center text-warning"><i class="bi bi-person"></i>
       {{ t('addPlayer', 2) }}
     </h3>

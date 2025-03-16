@@ -7,8 +7,8 @@
         show-empty=""
         empty-text=""
         responsive
-        class="custom-table mt-3 games-table"
-        style="max-height: 800px"
+        class="custom-table mt-3 fs-4"
+        style="max-height: 1200px"
     >
       <template #cell(board)="data">
         #{{ data.index + 1 }}
