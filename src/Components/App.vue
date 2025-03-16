@@ -36,13 +36,6 @@
       >
         <i class="bi bi-exclamation-triangle-fill"></i> {{ t('finish') }}
       </b-button>
-      <b-button size="md"
-                class="me-3"
-                variant="success"
-                @click="showReportsModal = true"
-      >
-        <i class="bi bi-bar-chart-fill"></i> {{ t("statistics") }}
-      </b-button>
     </div>
     <div v-if="tournamentStore.status === 'finished'" class="d-flex justify-content-center align-items-center">
       <PlayersList class="fs-1 w-75"/>
@@ -109,6 +102,10 @@ const confirmEndTournament = () => {
 };
 
 onMounted(() => {
+  window.electron.ipcRenderer.on('open-statistics', () => {
+    showReportsModal.value = true
+  });
+
   window.electron.ipcRenderer.on('open-settings', () => {
     settingsStore.showModal = true;
   });

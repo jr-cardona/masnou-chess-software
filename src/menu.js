@@ -42,6 +42,13 @@ const template = [
                 click: (menuItem, browserWindow) => {
                     browserWindow.webContents.send('open-settings');
                 }
+            },
+            {
+                label: 'Open Statistics',
+                accelerator: 'CmdOrCtrl+.',
+                click: (menuItem, browserWindow) => {
+                    browserWindow.webContents.send('open-statistics');
+                }
             }
         ]
     }
