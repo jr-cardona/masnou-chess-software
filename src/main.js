@@ -8,6 +8,7 @@ if (started) {
     app.quit();
 }
 
+const saveFilePath = path.dirname(app.getPath('exe'));
 let mainWindow = null;
 let timerWindow = null;
 
@@ -117,12 +118,10 @@ ipcMain.on('update-timer', (event, newTimer) => {
     }
 });
 
-ipcMain.on("save-excel-file", async (event, fileBuffer) => {
-    const defaultPath = path.dirname(app.getPath('exe'));
-
+ipcMain.on('save-excel-file', async (event, fileBuffer) => {
     const {filePath} = await dialog.showSaveDialog({
         title: "Save File",
-        defaultPath: path.join(defaultPath, "Tournament_Stats.xlsx"),
+        defaultPath: path.join(saveFilePath, 'Tournament_Stats.xlsx'),
         filters: [{name: "Excel Files", extensions: ["xlsx"]}]
     });
 
@@ -132,4 +131,19 @@ ipcMain.on("save-excel-file", async (event, fileBuffer) => {
     } else {
         event.reply("save-error", "Error saving file");
     }
+});
+
+ipcMain.on('save-tournament', (event, tournamentState) => {
+    try {
+        fs.writeFileSync(path.join(saveFilePath, 'tournament.json'), JSON.stringify(tournamentState, null, 2));
+    } catch (error) {
+        console.error('Error writing tournament state:', error);
+    }
+});
+
+ipcMain.handle('load-tournament', () => {
+    if (fs.existsSync(saveFilePath)) {
+        return JSON.parse(fs.readFileSync(path.join(saveFilePath, 'tournament.json'), 'utf-8'));
+    }
+    return null;
 });

@@ -4,19 +4,47 @@ import {useQueueStore} from './useQueueStore';
 import {useGamesStore} from './useGamesStore';
 import {useTournamentStore} from './useTournamentStore';
 
+const restoreTournamentState = (prevState) => {
+    const playersStore = usePlayersStore();
+    const queueStore = useQueueStore();
+    const gamesStore = useGamesStore();
+    const tournamentStore = useTournamentStore();
+    const historyStore = useHistoryStore();
+
+    playersStore.players = prevState.players;
+    queueStore.queue = prevState.queue;
+    gamesStore.activeGames = prevState.activeGames;
+    tournamentStore.status = prevState.status;
+    historyStore.events = prevState.events;
+    if (prevState.timer !== undefined) {
+        tournamentStore.setTimer(prevState.timer);
+    }
+};
+
 export const useHistoryStore = defineStore('historyStore', {
     state: () => ({
         history: [],
         events: [],
     }),
     actions: {
+        saveManualState() {
+            const snapshot = this.getSnapshot({timer: useTournamentStore().timer});
+            window.electron.ipcRenderer.send('save-tournament', snapshot);
+        },
+
         saveState(extra = {}) {
+            const snapshot = this.getSnapshot(extra);
+            this.history.push(snapshot);
+            if (this.history.length > 25) this.history.shift();
+        },
+
+        getSnapshot(extra = {}) {
             const playersStore = usePlayersStore();
             const queueStore = useQueueStore();
             const gamesStore = useGamesStore();
             const tournamentStore = useTournamentStore();
 
-            const stateSnapshot = {
+            return {
                 players: JSON.parse(JSON.stringify(playersStore.players)),
                 queue: JSON.parse(JSON.stringify(queueStore.queue)),
                 activeGames: JSON.parse(JSON.stringify(gamesStore.activeGames)),
@@ -24,9 +52,6 @@ export const useHistoryStore = defineStore('historyStore', {
                 status: tournamentStore.status,
                 ...extra
             };
-
-            this.history.push(stateSnapshot);
-            if (this.history.length > 100) this.history.shift();
         },
 
         addEvent(key, params = {}) {
@@ -78,19 +103,18 @@ export const useHistoryStore = defineStore('historyStore', {
             if (this.history.length === 0) return;
 
             const prevState = this.history.pop();
-            const playersStore = usePlayersStore();
-            const queueStore = useQueueStore();
-            const gamesStore = useGamesStore();
-            const tournamentStore = useTournamentStore();
 
-            playersStore.players = prevState.players;
-            queueStore.queue = prevState.queue;
-            gamesStore.activeGames = prevState.activeGames;
-            tournamentStore.status = prevState.status;
-            this.events = prevState.events;
-            if (prevState.timer !== undefined) {
-                tournamentStore.setTimer(prevState.timer);
-            }
+            restoreTournamentState(prevState);
         },
     }
 });
+
+export const loadTournament = async () => {
+    const tournamentState = await window.electron.ipcRenderer.invoke('load-tournament');
+    const tournamentStore = useTournamentStore();
+
+    if (tournamentState) {
+        restoreTournamentState(tournamentState);
+        tournamentStore.startTimer();
+    }
+};

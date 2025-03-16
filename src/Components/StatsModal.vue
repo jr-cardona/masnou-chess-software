@@ -84,6 +84,6 @@ const exportToExcel = async () => {
 
   const wbout = XLSX.write(wb, {bookType: "xlsx", type: "buffer"});
 
-  window.electron.ipcRenderer.send("save-excel-file", wbout);
+  window.electron.ipcRenderer.send('save-excel-file', wbout);
 };
 </script>

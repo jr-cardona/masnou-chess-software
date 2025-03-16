@@ -36,6 +36,13 @@
       >
         <i class="bi bi-exclamation-triangle-fill"></i> {{ t('finish') }}
       </b-button>
+      <b-button size="md"
+                class="me-3"
+                variant="success"
+                @click="historyStore.saveManualState()"
+      >
+        <i class="bi bi-floppy-fill me-1"></i> {{ t("save") }}
+      </b-button>
     </div>
     <div v-if="tournamentStore.status === 'finished'" class="d-flex justify-content-center align-items-center">
       <PlayersList class="fs-1 w-75"/>
@@ -74,6 +81,7 @@ import {BButton} from 'bootstrap-vue-3';
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {useSettingsStore} from '../stores/useSettingsStore';
 import {useHistoryStore} from '../stores/useHistoryStore';
+import {loadTournament} from '../stores/useHistoryStore';
 import {useI18n} from 'vue-i18n';
 import {onMounted, ref} from 'vue';
 
@@ -101,7 +109,9 @@ const confirmEndTournament = () => {
   });
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await loadTournament();
+
   window.electron.ipcRenderer.on('open-statistics', () => {
     showReportsModal.value = true
   });
