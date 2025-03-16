@@ -66,5 +66,19 @@ export const usePlayersStore = defineStore('playersStore', {
             useHistoryStore().saveState();
             this.players.push(...testPlayers);
         }
+    },
+    getters: {
+        playersWithStats(state) {
+            return state.players.map((player, index) => {
+                const gamesPlayed = (player.wins || 0) + (player.draws || 0) + (player.losses || 0);
+                const winRate = gamesPlayed === 0 ? "0.00" : ((player.wins || 0) / gamesPlayed * 100).toFixed(2);
+                return {
+                    ...player,
+                    rank: index + 1,
+                    gamesPlayed,
+                    winRate
+                };
+            });
+        }
     }
 });

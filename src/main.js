@@ -1,7 +1,8 @@
-import {app, BrowserWindow, ipcMain} from 'electron';
+import {app, BrowserWindow, ipcMain, dialog, screen} from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import {createAppMenu} from './menu.js';
+import * as fs from "node:fs";
 
 if (started) {
     app.quit();
@@ -24,6 +25,8 @@ const createWindow = () => {
             nodeIntegration: false
         }
     });
+
+    mainWindow.maximize();
 
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
@@ -72,6 +75,8 @@ ipcMain.on('open-timer-window', (event, timerValue) => {
     timerWindow = new BrowserWindow({
         width: 900,
         height: 230,
+        x: 0,
+        y: screen.getPrimaryDisplay().workAreaSize.height - 230,
         icon: path.join(app.getAppPath(), 'public/icon.png'),
         alwaysOnTop: true,
         webPreferences: {
@@ -94,7 +99,6 @@ ipcMain.on('open-timer-window', (event, timerValue) => {
         timerWindow.webContents.send('update-timer', timerValue);
     });
 
-
     timerWindow.on('close', (event) => {
         if (mainWindow && !mainWindow.isDestroyed()) {
             event.preventDefault();
@@ -110,5 +114,22 @@ ipcMain.on('open-timer-window', (event, timerValue) => {
 ipcMain.on('update-timer', (event, newTimer) => {
     if (timerWindow) {
         timerWindow.webContents.send('update-timer', newTimer);
+    }
+});
+
+ipcMain.on("save-excel-file", async (event, fileBuffer) => {
+    const defaultPath = path.dirname(app.getPath('exe'));
+
+    const {filePath} = await dialog.showSaveDialog({
+        title: "Save File",
+        defaultPath: path.join(defaultPath, "Tournament_Stats.xlsx"),
+        filters: [{name: "Excel Files", extensions: ["xlsx"]}]
+    });
+
+    if (filePath) {
+        fs.writeFileSync(filePath, fileBuffer);
+        event.reply("save-success", filePath);
+    } else {
+        event.reply("save-error", "Error saving file");
     }
 });
