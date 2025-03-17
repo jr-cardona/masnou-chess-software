@@ -45,7 +45,7 @@
       </b-button>
     </div>
     <div v-if="tournamentStore.status === 'finished'" class="d-flex justify-content-center align-items-center">
-      <Scoreboard class="fs-1 w-75"/>
+      <Scoreboard class="fs-3 w-100"/>
     </div>
     <div v-else>
       <div class="d-flex flex-column flex-md-row mt-2">

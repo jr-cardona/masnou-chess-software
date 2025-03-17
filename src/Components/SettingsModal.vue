@@ -60,7 +60,7 @@
           <div v-if="maxBoardsError" class="invalid-feedback d-block">{{ maxBoardsError }}</div>
         </b-form-group>
 
-        <b-form-group :label="t('tournamentDuration')">
+        <b-form-group :disabled="tournamentStore.status === 'inCourse'" :label="t('tournamentDuration')">
           <div class="d-flex align-items-center">
             <b-input-group class="w-auto">
               <b-form-input v-model.number="settingsStore.settings.hours"
@@ -111,9 +111,11 @@ import {ref, onMounted, computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useSettingsStore} from '../stores/useSettingsStore';
 import {BModal, BButton, BFormGroup, BFormSelect, BFormInput, BTabs} from 'bootstrap-vue-3';
+import {useTournamentStore} from '../stores/useTournamentStore';
 
 const {t, locale} = useI18n({useScope: 'global'});
 const settingsStore = useSettingsStore();
+const tournamentStore = useTournamentStore();
 const timeError = ref('');
 const maxBoardsError = ref('');
 const language = ref(localStorage.getItem('language') ?? 'us');

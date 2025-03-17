@@ -27,8 +27,6 @@ const createWindow = () => {
         }
     });
 
-    mainWindow.maximize();
-
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
     } else {
@@ -74,10 +72,10 @@ ipcMain.on('open-timer-window', (event, timerValue) => {
     }
 
     timerWindow = new BrowserWindow({
-        width: 900,
-        height: 230,
+        width: 800,
+        height: 200,
         x: 0,
-        y: screen.getPrimaryDisplay().workAreaSize.height - 230,
+        y: 0,
         icon: path.join(app.getAppPath(), 'public/icon.png'),
         alwaysOnTop: true,
         webPreferences: {
@@ -135,14 +133,14 @@ ipcMain.on('save-excel-file', async (event, fileBuffer) => {
 
 ipcMain.on('save-tournament', (event, tournamentState) => {
     try {
-        fs.writeFileSync(path.join(saveFilePath, 'tournament.json'), JSON.stringify(tournamentState, null, 2));
+        fs.writeFileSync(path.join(saveFilePath, 'tournamentV2.1.json'), JSON.stringify(tournamentState, null, 2));
     } catch (error) {
         console.error('Error writing tournament state:', error);
     }
 });
 
 ipcMain.handle('load-tournament', () => {
-    const filePath = path.join(saveFilePath, 'tournament.json');
+    const filePath = path.join(saveFilePath, 'tournamentV2.1.json');
     if (fs.existsSync(filePath)) {
         return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
     }

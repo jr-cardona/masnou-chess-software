@@ -7,8 +7,8 @@
         show-empty=""
         empty-text=""
         responsive
-        class="custom-table mt-3 fs-4"
-        style="max-height: 1200px"
+        class="custom-table mt-3"
+        style="max-height: 700px"
     >
       <template #cell(board)="data">
         #{{ data.index + 1 }}
@@ -93,12 +93,12 @@ const gamesStore = useGamesStore();
 const playersStore = usePlayersStore();
 const tournamentStore = useTournamentStore();
 const settingStore = useSettingsStore();
-const fields = [
+const fields = computed(() => [
   {key: 'board', label: t('board'), class: 'text-center small-col'},
   {key: 'white', label: t('white'), class: 'w-25'},
   {key: 'result', label: '', class: 'text-nowrap text-center'},
   {key: 'black', label: t('black'), class: 'text-end w-25'},
-];
+]);
 const startPairing = () => {
   const result = tournamentStore.startPairing();
   if (!result.success) {

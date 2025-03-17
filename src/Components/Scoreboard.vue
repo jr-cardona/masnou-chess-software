@@ -15,7 +15,9 @@
           <div class="d-flex align-items-center">
             <span>{{ t('name') }}</span>
             <b-input-group class="ms-3">
-              <b-input-group-text class="bg-dark text-light height-25"><i class="bi bi-search small"></i></b-input-group-text>
+              <b-input-group-text class="bg-dark text-light height-25">
+                <i class="bi bi-search small"></i>
+              </b-input-group-text>
               <b-form-input
                   v-model="searchQuery"
                   class="bg-dark text-light height-25"
@@ -32,6 +34,51 @@
         </template>
         <template #cell(name)="data">
           #{{ data.index + 1 }} {{ data.item.name }}
+        </template>
+        <template #head(points)>
+          <span>
+            {{ t('P') }}
+            <b-button variant="outline-secondary" size="sm" class="p-0 border-0" data-bs-toggle="tooltip"
+                      data-bs-placement="top" :title="t('point', 2)">
+              <i class="bi bi-info-circle"></i>
+            </b-button>
+          </span>
+        </template>
+        <template #head(wins)>
+          <span>
+            {{ t('W') }}
+            <b-button variant="outline-secondary" size="sm" class="p-0 border-0" data-bs-toggle="tooltip"
+                      data-bs-placement="top" :title="t('wins')">
+              <i class="bi bi-info-circle"></i>
+            </b-button>
+          </span>
+        </template>
+        <template #head(draws)>
+          <span>
+            {{ t('D') }}
+            <b-button variant="outline-secondary" size="sm" class="p-0 border-0" data-bs-toggle="tooltip"
+                      data-bs-placement="top" :title="t('draw', 2)">
+              <i class="bi bi-info-circle"></i>
+            </b-button>
+          </span>
+        </template>
+        <template #head(losses)>
+          <span>
+            {{ t('L') }}
+            <b-button variant="outline-secondary" size="sm" class="p-0 border-0" data-bs-toggle="tooltip"
+                      data-bs-placement="top" :title="t('losses')">
+              <i class="bi bi-info-circle"></i>
+            </b-button>
+          </span>
+        </template>
+        <template #head(gamesPlayed)>
+          <span>
+            {{ t('T') }}
+            <b-button variant="outline-secondary" size="sm" class="p-0 border-0" data-bs-toggle="tooltip"
+                      data-bs-placement="top" :title="t('gamesPlayed')">
+              <i class="bi bi-info-circle"></i>
+            </b-button>
+          </span>
         </template>
         <template #cell(winRate)="data">
           {{ data.item.winRate }}%

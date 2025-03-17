@@ -1,5 +1,5 @@
 <template>
-  <svg x="0px" y="0px" height="30px" width="30px"
+  <svg x="0px" y="0px" height="20px" width="20px"
        viewBox="0 0 122.88 70.36"
        style="enable-background:new 0 0 122.88 70.36" xml:space="preserve"
   >
