@@ -1,32 +1,27 @@
 <template>
-  <div class="mt-5">
-    <h3 class="text-center text-warning"><i class="bi bi-person"></i>
-      {{ t('addPlayer', 2) }}
-    </h3>
-    <div class="card text-light p-4 rounded bg-dark">
-      <b-form @submit.prevent="addNewPlayers">
-        <div class="form-floating mb-3">
-          <b-form-textarea
+  <div class="mt-2">
+    <b-form @submit.prevent="addNewPlayers">
+      <div class="d-flex align-items-center gap-2">
+        <div class="form-floating flex-grow-1 pe-4">
+          <b-form-input
               id="playerNames"
               placeholder=""
               ref="playerNamesInput"
               v-model="playerNames"
               :class="{'is-invalid': playerNamesError}"
-              class="h-100"
-              rows="6"
               @input="validatePlayerNames"
-          ></b-form-textarea>
+          ></b-form-input>
           <label for="playerNames" class="text-dark">{{ t('enterPlayerNames') }} *</label>
           <div v-if="playerNamesError" class="invalid-feedback">
             {{ playerNamesError }}
           </div>
         </div>
 
-        <b-button type="submit" variant="warning" class="w-100 fs-5 fw-medium">
+        <b-button type="submit" variant="warning" class="w-auto fs-5 fw-medium">
           <i class="bi bi-floppy"></i> {{ t('save') }}
         </b-button>
-      </b-form>
-    </div>
+      </div>
+    </b-form>
   </div>
 </template>
 
@@ -46,7 +41,7 @@ const addNewPlayers = () => {
   if (!validatePlayerNames()) return;
 
   const playerList = playerNames.value
-      .split("\n")
+      .split(",")
       .map(name => name.trim())
       .filter(name => name.length > 0);
 
@@ -59,7 +54,7 @@ const addNewPlayers = () => {
   playerNames.value = '';
 };
 const validatePlayerNames = () => {
-  const names = playerNames.value.split("\n").map(name => name.trim()).filter(name => name.length > 0);
+  const names = playerNames.value.split(",").map(name => name.trim()).filter(name => name.length > 0);
 
   if (names.length === 0) {
     playerNamesError.value = t('playerNameRequired');

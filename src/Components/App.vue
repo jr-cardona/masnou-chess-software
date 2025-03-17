@@ -45,24 +45,19 @@
       </b-button>
     </div>
     <div v-if="tournamentStore.status === 'finished'" class="d-flex justify-content-center align-items-center">
-      <PlayersList class="fs-1 w-75"/>
+      <Scoreboard class="fs-1 w-75"/>
     </div>
-
     <div v-else>
       <div class="d-flex flex-column flex-md-row mt-2">
-        <div class="col-md-3 px-4">
-          <div v-if="tournamentStore.timer > 0">
-            <QueuePlayers/>
-            <AddPlayer/>
-          </div>
+        <div class="col-md-6 px-4">
+          <Scoreboard class="flex-grow-1 overflow-auto"/>
+          <AddPlayer/>
         </div>
         <div class="col-md-6 d-flex flex-column align-items-center px-4">
           <div class="w-100">
             <GameList/>
+            <QueuePlayers/>
           </div>
-        </div>
-        <div class="col-md-3 px-4 d-flex flex-column">
-          <PlayersList class="flex-grow-1 overflow-auto"/>
         </div>
       </div>
     </div>
@@ -72,7 +67,7 @@
 <script setup>
 import AddPlayer from '../Components/AddPlayer.vue';
 import GameList from './GamesTable.vue';
-import PlayersList from './PlayersTable.vue';
+import Scoreboard from './Scoreboard.vue';
 import QueuePlayers from './QueuePlayers.vue';
 import StatsModal from './StatsModal.vue';
 import SettingsModal from './SettingsModal.vue';

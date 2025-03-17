@@ -32,15 +32,21 @@ export const usePlayersStore = defineStore('playersStore', {
             }
         },
 
-        removePlayer(player) {
-            useHistoryStore().saveState();
+        removePlayer(playerName) {
+            const historyStore = useHistoryStore();
+
+            const player = this.players.find(p => p.name === playerName);
+
+            historyStore.saveState();
             this.players = this.players.filter(p => p.name !== player.name);
         },
 
-        pausePlayer(player) {
+        pausePlayer(playerName) {
             const historyStore = useHistoryStore();
             const gameStore = useGamesStore();
             const queueStore = useQueueStore();
+
+            const player = this.players.find(p => p.name === playerName);
 
             historyStore.saveState();
             historyStore.addPausePlayerEvent(player.name);
@@ -56,9 +62,13 @@ export const usePlayersStore = defineStore('playersStore', {
             player.status = 'paused';
         },
 
-        resumePlayer(player) {
+        resumePlayer(playerName) {
+            const historyStore = useHistoryStore();
             const queueStore = useQueueStore();
-            useHistoryStore().saveState();
+
+            const player = this.players.find(p => p.name === playerName);
+
+            historyStore.saveState();
             queueStore.enqueue(player, 'resume');
         },
 
