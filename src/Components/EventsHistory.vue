@@ -1,6 +1,6 @@
 <template>
   <ul>
-    <li v-for="group in historyStore.events" :key="group.timestamp">
+    <li v-for="group in historyStore.events" :key="group.timestamp" class="mb-5">
       <strong>{{ group.timestamp }}</strong>
       <ul>
         <li v-for="event in group.events" :key="event.key + JSON.stringify(event.params)">

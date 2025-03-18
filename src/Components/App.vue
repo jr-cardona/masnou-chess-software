@@ -9,27 +9,27 @@
       </h1>
       <div class="flex flex-wrap justify-center gap-2">
         <button v-if="tournamentStore.status === 'paired'"
-                class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition font-bold"
+                class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
                 @click="tournamentStore.startTournament">
           <i class="bi bi-play"></i> {{ t('start') }}
         </button>
         <button v-if="tournamentStore.status === 'inCourse' && tournamentStore.timer > 0"
-                class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition font-bold"
+                class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
                 @click="tournamentStore.pauseTournament">
           <i class="bi bi-pause"></i> {{ t('pause') }}
         </button>
         <button v-if="tournamentStore.status === 'stopped'"
-                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition font-bold"
+                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
                 @click="tournamentStore.resumeTournament">
           <i class="bi bi-play"></i> {{ t('resume') }}
         </button>
         <button v-if="tournamentStore.status === 'inCourse' || tournamentStore.status === 'stopped'"
-                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition font-bold"
+                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
                 @click="confirmEndTournament">
           <i class="bi bi-exclamation-triangle-fill"></i> {{ t('finish') }}
         </button>
         <button v-if="tournamentStore.status !== 'idle'"
-                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition font-bold"
+                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition"
                 @click="saveTournament">
           <i class="bi bi-floppy-fill me-1"></i> {{ t('save') }}
         </button>

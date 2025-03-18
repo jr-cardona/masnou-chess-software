@@ -6,9 +6,9 @@
     <div class="mt-3 overflow-auto max-h-[700px]">
       <table class="w-full text-left custom-table bg-gray-800 border border-gray-900">
         <thead>
-        <tr class="bg-black text-yellow-500">
-          <th class="p-2 text-center">#</th>
-          <th class="p-2">
+        <tr class="bg-gray-900 text-yellow-500">
+          <th class="p-1 text-center">#</th>
+          <th class="p-1">
             <div class="flex items-center">
               <span>{{ t('name') }}</span>
               <div class="flex items-center bg-gray-700 text-white rounded-md ml-5 h-[25px] border border-gray-400">
@@ -23,7 +23,7 @@
               </div>
             </div>
           </th>
-          <th class="p-2 text-center">
+          <th class="p-1 text-center">
               <span v-if="tournamentStore.status !== 'finished'" class="flex items-center justify-center">
                 {{ t('P') }}
                 <button class="p-0 bg-transparent text-gray-400 hover:text-gray-200 ml-1" :title="t('point', 2)">
@@ -32,7 +32,7 @@
               </span>
             <span v-else>{{ t('point', 2) }}</span>
           </th>
-          <th class="p-2 text-center">
+          <th class="p-1 text-center">
               <span v-if="tournamentStore.status !== 'finished'" class="flex items-center justify-center">
                 {{ t('W') }}
                 <button class="p-0 bg-transparent text-gray-400 hover:text-gray-200 ml-1" :title="t('wins')">
@@ -41,7 +41,7 @@
               </span>
             <span v-else>{{ t('wins') }}</span>
           </th>
-          <th class="p-2 text-center">
+          <th class="p-1 text-center">
               <span v-if="tournamentStore.status !== 'finished'" class="flex items-center justify-center">
                 {{ t('D') }}
                 <button class="p-0 bg-transparent text-gray-400 hover:text-gray-200 ml-1" :title="t('draw', 2)">
@@ -50,7 +50,7 @@
               </span>
             <span v-else>{{ t('draw', 2) }}</span>
           </th>
-          <th class="p-2 text-center">
+          <th class="p-1 text-center">
               <span v-if="tournamentStore.status !== 'finished'" class="flex items-center justify-center">
                 {{ t('L') }}
                 <button class="p-0 bg-transparent text-gray-400 hover:text-gray-200 ml-1" :title="t('losses')">
@@ -59,7 +59,7 @@
               </span>
             <span v-else>{{ t('losses') }}</span>
           </th>
-          <th class="p-2 text-center">
+          <th class="p-1 text-center">
               <span v-if="tournamentStore.status !== 'finished'" class="flex items-center justify-center">
                 {{ t('T') }}
                 <button class="p-0 bg-transparent text-gray-400 hover:text-gray-200 ml-1" :title="t('gamesPlayed')">
@@ -68,11 +68,11 @@
               </span>
             <span v-else>{{ t('gamesPlayed') }}</span>
           </th>
-          <th class="p-2 text-center">Win%</th>
-          <th class="p-2 text-center">
+          <th class="p-1 text-center">Win%</th>
+          <th class="p-1 text-center">
             <span v-if="tournamentStore.status !== 'finished'">{{ t('status') }}</span>
           </th>
-          <th class="p-2 text-center flex justify-center">
+          <th class="p-1 text-center flex justify-center">
             <button
                 class="p-1 text-white bg-green-600 hover:bg-green-700 rounded text-sm flex items-center"
                 :title="t('export')"
@@ -85,24 +85,24 @@
         </tr>
         </thead>
 
-        <tbody>
-        <tr v-for="(player) in filteredPlayers" :key="player.name" class="border-t">
-          <td class="p-2 text-center">{{ player.rank }}</td>
-          <td class="p-2">{{ player.name }}</td>
-          <td class="p-2 text-center">{{ player.points }}</td>
-          <td class="p-2 text-center">{{ player.wins }}</td>
-          <td class="p-2 text-center">{{ player.draws }}</td>
-          <td class="p-2 text-center">{{ player.losses }}</td>
-          <td class="p-2 text-center">{{ player.gamesPlayed }}</td>
-          <td class="p-2 text-center">{{ player.winRate }}%</td>
-          <td class="p-2">
+        <tbody class="text-gray-300">
+        <tr v-for="(player) in filteredPlayers" :key="player.name" class="odd:bg-gray-800 even:bg-gray-900">
+          <td class="p-1 text-center">{{ player.rank }}</td>
+          <td class="p-1">{{ player.name }}</td>
+          <td class="p-1 text-center">{{ player.points }}</td>
+          <td class="p-1 text-center">{{ player.wins }}</td>
+          <td class="p-1 text-center">{{ player.draws }}</td>
+          <td class="p-1 text-center">{{ player.losses }}</td>
+          <td class="p-1 text-center">{{ player.gamesPlayed }}</td>
+          <td class="p-1 text-center">{{ player.winRate }}%</td>
+          <td class="p-1">
             <span v-if="tournamentStore.status !== 'finished'">
               <i :class="statusMap[player.status]?.icon || 'bi bi-question-circle'"
                  class="text-blue-500 mr-1 text-yellow-500"></i>
               {{ statusMap[player.status]?.text || player.status }}
             </span>
           </td>
-          <td class="p-2 text-center">
+          <td class="p-1 text-center">
             <span v-if="tournamentStore.status !== 'finished'">
             <button
                 class="p-1 text-white rounded text-sm"

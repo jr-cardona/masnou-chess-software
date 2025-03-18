@@ -1,5 +1,6 @@
 import './index.css';
 import './fonts.css';
+import './bootstrap-modal.css';
 import {createApp} from 'vue';
 import {createPinia} from 'pinia';
 import App from './Components/App.vue';

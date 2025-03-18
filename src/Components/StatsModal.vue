@@ -21,11 +21,12 @@
         <EventsHistory></EventsHistory>
       </b-tab>
     </b-tabs>
-    <!-- Botones de acción -->
-    <div class="justify-content-end d-flex mt-3">
-      <b-button variant="success" @click="exportToExcel" class="w-25">
-        <i class="bi bi-file-earmark-excel"></i> {{ t('export') }}
-      </b-button>
+    <!-- Export button -->
+    <div class="flex justify-end mt-3">
+      <button @click="exportToExcel"
+              class="w-1/4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center justify-center hover:bg-green-600">
+        <i class="bi bi-file-earmark-excel me-2"></i> {{ t('export') }}
+      </button>
     </div>
   </b-modal>
 </template>

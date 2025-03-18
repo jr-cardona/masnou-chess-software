@@ -6,15 +6,15 @@
     <div class="mt-3 overflow-auto max-h-[700px]">
       <table class="w-full text-left custom-table bg-gray-800 border border-gray-900">
         <thead>
-        <tr class="bg-black text-yellow-500">
+        <tr class="bg-gray-900 text-yellow-500">
           <th class="p-2 text-center text-nowrap small-col">{{ t('board') }}</th>
           <th class="p-2">{{ t('white') }}</th>
           <th class="p-2 text-center"></th>
           <th class="p-2 text-right">{{ t('black') }}</th>
         </tr>
         </thead>
-        <tbody>
-        <tr v-for="(game, index) in gamesStore.activeGames" :key="index" class="border-b">
+        <tbody class="text-gray-300">
+        <tr v-for="(game, index) in gamesStore.activeGames" :key="index" class="odd:bg-gray-800 even:bg-gray-900">
           <td class="text-center">#{{ index + 1 }}</td>
           <td class="pl-2">{{ game.white.name }}</td>
           <td class="text-center">
