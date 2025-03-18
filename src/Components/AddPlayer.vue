@@ -1,38 +1,34 @@
 <template>
-  <div class="mt-2">
-    <b-form @submit.prevent="addNewPlayers">
-      <div class="d-flex align-items-center gap-2">
-        <div class="form-floating flex-grow-1 pe-4">
-          <b-form-input
-              id="playerNames"
-              placeholder=""
-              ref="playerNamesInput"
-              v-model="playerNames"
-              :class="{'is-invalid': playerNamesError}"
-              @input="validatePlayerNames"
-          ></b-form-input>
-          <label for="playerNames" class="text-dark">{{ t('enterPlayerNames') }} *</label>
-          <div v-if="playerNamesError" class="invalid-feedback">
-            {{ playerNamesError }}
-          </div>
-        </div>
-
-        <b-button type="submit" variant="warning" class="w-auto fs-5 fw-medium">
-          <i class="bi bi-floppy"></i> {{ t('save') }}
-        </b-button>
+  <div class="mt-4">
+    <form @submit.prevent="addNewPlayers" class="flex items-start gap-4">
+      <div class="flex-grow">
+        <input
+            id="playerNames"
+            ref="playerNamesInput"
+            v-model="playerNames"
+            @input="validatePlayerNames"
+            :class="{'border-red-500': playerNamesError}"
+            class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            :placeholder="t('enterPlayerNames')"
+        />
+        <p v-if="playerNamesError" class="text-red-500 text-sm mt-1">
+          {{ playerNamesError }}
+        </p>
       </div>
-    </b-form>
+      <button type="submit"
+              class="px-4 py-2 bg-yellow-400 text-black rounded-md text-lg font-medium flex items-center self-start h-full">
+        <i class="bi bi-floppy mr-2"></i> {{ t('save') }}
+      </button>
+    </form>
   </div>
 </template>
-
 
 <script setup>
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {usePlayersStore} from '../stores/usePlayersStore';
-import {BForm, BButton} from 'bootstrap-vue-3';
 
-const {t} = useI18n({useScope: 'global'})
+const {t} = useI18n({useScope: 'global'});
 const playersStore = usePlayersStore();
 const playerNames = ref('');
 const playerNamesError = ref('');
@@ -53,6 +49,7 @@ const addNewPlayers = () => {
 
   playerNames.value = '';
 };
+
 const validatePlayerNames = () => {
   const names = playerNames.value.split(",").map(name => name.trim()).filter(name => name.length > 0);
 
