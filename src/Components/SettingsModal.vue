@@ -18,25 +18,43 @@
         <template #title>
           <i class="bi bi-globe-americas me-1"></i> {{ t('language') }}
         </template>
-        <div class="custom-dropdown" :class="{ open: isOpen }">
-          <button class="custom-dropdown-toggle" @click="isOpen = !isOpen">
-            <span>
-              <span class="flag">
+        <div class="relative inline-block w-60 text-black">
+          <!-- Dropdown button -->
+          <button
+              @click="isOpen = !isOpen"
+              class="flex w-full items-center justify-between rounded-lg border-2 border-gray-300 bg-white px-4 py-3 shadow-sm transition-colors hover:bg-gray-50"
+          >
+            <div class="flex items-center gap-2">
+              <!-- Flag -->
+              <div class="flag">
                 <img :src="`flags/${selectedLanguage.value}.svg`" width="30" :alt="selectedLanguage.text">
-              </span>
-              {{ selectedLanguage.text }}
-            </span>
-            <span>▼</span>
-          </button>
-          <div class="custom-dropdown-menu">
-            <div v-for="(lang, index) in languages" :key="lang.value">
-              <div @click="selectLanguage(lang)" class="custom-dropdown-item">
-                <span class="flag">
-                  <img :src="`flags/${lang.value}.svg`" width="30" :alt="lang.text">
-                </span>
-                {{ lang.text }}
               </div>
-              <div v-if="index < languages.length - 1" class="custom-dropdown-divider"></div>
+              <!-- Selected language text -->
+              <span class="text-base">{{ selectedLanguage.text }}</span>
+            </div>
+            <!-- Arrow -->
+            <span class="text-gray-500">▼</span>
+          </button>
+          <!-- Dropdown -->
+          <div
+              v-if="isOpen"
+              class="absolute left-0 top-full z-10 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg"
+          >
+            <!-- Dropdown options -->
+            <div
+                v-for="(lang, index) in languages"
+                :key="lang.value"
+                @click="selectLanguage(lang)"
+                class="flex cursor-pointer items-center gap-2 px-4 py-3 transition-colors hover:bg-gray-100"
+            >
+              <!-- Flag -->
+              <div class="flag">
+                <img :src="`flags/${lang.value}.svg`" width="30" :alt="lang.text"/>
+              </div>
+              <!-- Language text -->
+              <span class="text-base">{{ lang.text }}</span>
+              <!-- Divisor -->
+              <div v-if="index < languages.length - 1" class="border-t border-gray-200"></div>
             </div>
           </div>
         </div>
@@ -61,8 +79,8 @@
         </b-form-group>
 
         <b-form-group :disabled="tournamentStore.status === 'inCourse'" :label="t('tournamentDuration')">
-          <div class="d-flex align-items-center">
-            <b-input-group class="w-auto">
+          <div class="flex items-center gap-2">
+            <b-input-group>
               <b-form-input v-model.number="settingsStore.settings.hours"
                             class="text-center time-field"
                             @blur="validateHours"
@@ -70,7 +88,7 @@
               <b-input-group-text>h</b-input-group-text>
             </b-input-group>
             <span class="mx-2">:</span>
-            <b-input-group class="w-auto">
+            <b-input-group>
               <b-form-input v-model.number="settingsStore.settings.minutes"
                             class="text-center time-field"
                             @blur="validateMinutes"
@@ -95,13 +113,20 @@
       </b-tab>
     </b-tabs>
     <!-- Action buttons -->
-    <div class="justify-content-between d-flex mt-3">
-      <b-button variant="secondary" @click="settingsStore.resetSettings" class="w-25">
+    <div class="flex justify-between mt-3 gap-4">
+      <button
+          @click="settingsStore.resetSettings"
+          class="w-1/4 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded flex items-center justify-center gap-2 transition-colors"
+      >
         <i class="bi bi-arrow-counterclockwise"></i> {{ t('reset') }}
-      </b-button>
-      <b-button variant="warning" :disabled="!isFormValid" @click="saveSettings" class="w-25">
+      </button>
+      <button
+          :disabled="!isFormValid"
+          @click="saveSettings"
+          class="w-1/4 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
         <i class="bi bi-floppy"></i> {{ t('save') }}
-      </b-button>
+      </button>
     </div>
   </b-modal>
 </template>
@@ -110,7 +135,7 @@
 import {ref, onMounted, computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useSettingsStore} from '../stores/useSettingsStore';
-import {BModal, BButton, BFormGroup, BFormSelect, BFormInput, BTabs} from 'bootstrap-vue-3';
+import {BModal, BFormGroup, BFormSelect, BFormInput, BTabs} from 'bootstrap-vue-3';
 import {useTournamentStore} from '../stores/useTournamentStore';
 
 const {t, locale} = useI18n({useScope: 'global'});
@@ -193,77 +218,8 @@ onMounted(() => {
   }
 });
 </script>
-<style>
+<style scoped>
 .time-field {
   max-width: 50px;
 }
-
-.custom-dropdown {
-  position: relative;
-  display: inline-block;
-  width: 240px;
-}
-
-.custom-dropdown-toggle {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  font-size: 16px;
-  background: white;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s;
-}
-
-.custom-dropdown-toggle:hover {
-  background: #f8f8f8;
-}
-
-.custom-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  display: none;
-}
-
-.custom-dropdown.open .custom-dropdown-menu {
-  display: block;
-}
-
-.custom-dropdown-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.2s;
-  color: #1E1E1E;
-}
-
-.custom-dropdown-item:hover {
-  background: #f0f0f0;
-}
-
-.flag {
-  margin-right: 10px;
-  font-size: 20px;
-}
-
-.custom-dropdown-divider {
-  width: 100%;
-  height: 1px;
-  background: #ddd;
-  margin: 8px 0;
-}
-
 </style>
