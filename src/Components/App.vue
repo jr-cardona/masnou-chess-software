@@ -1,60 +1,52 @@
 <template>
-  <div class='container-full'>
-    <SettingsModal></SettingsModal>
-    <StatsModal v-model:show="showReportsModal"></StatsModal>
-    <div class="d-flex align-items-center justify-content-center">
-      <h1 v-if="tournamentStore.status !== 'finished'" class="me-3">{{ settingsStore.settings.tournamentName }}</h1>
-      <b-button size="md"
-                class="me-3"
-                variant="warning"
-                v-if="tournamentStore.status === 'paired'"
-                @click="tournamentStore.startTournament"
-      >
-        <i class="bi bi-play"></i> {{ t('start') }}
-      </b-button>
-      <b-button size="md"
-                variant="secondary"
-                class="me-3"
-                v-if="tournamentStore.status === 'inCourse' && tournamentStore.timer > 0"
-                @click="tournamentStore.pauseTournament"
-      >
-        <i class="bi bi-pause"></i> {{ t('pause') }}
-      </b-button>
-      <b-button size="md"
-                class="me-3"
-                variant="primary"
-                v-if="tournamentStore.status === 'stopped'"
-                @click="tournamentStore.resumeTournament"
-      >
-        <i class="bi bi-play"></i> {{ t('resume') }}
-      </b-button>
-      <b-button size="md"
-                class="me-3"
-                variant="danger"
-                v-if="tournamentStore.status === 'inCourse' || tournamentStore.status === 'stopped'"
-                @click="confirmEndTournament"
-      >
-        <i class="bi bi-exclamation-triangle-fill"></i> {{ t('finish') }}
-      </b-button>
-      <b-button size="md"
-                class="me-3"
-                variant="success"
-                @click="saveTournament"
-      >
-        <i class="bi bi-floppy-fill me-1"></i> {{ t('save') }}
-      </b-button>
+  <div class="w-full min-h-screen bg-gray-900 text-gray-100 p-4">
+    <SettingsModal/>
+    <StatsModal v-model:show="showReportsModal"/>
+
+    <div class="flex flex-col items-center">
+      <h1 v-if="tournamentStore.status !== 'finished'" class="text-2xl font-bold">
+        {{ settingsStore.settings.tournamentName }}
+      </h1>
+      <div class="flex flex-wrap justify-center gap-2">
+        <button v-if="tournamentStore.status === 'paired'"
+                class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
+                @click="tournamentStore.startTournament">
+          <i class="bi bi-play"></i> {{ t('start') }}
+        </button>
+        <button v-if="tournamentStore.status === 'inCourse' && tournamentStore.timer > 0"
+                class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+                @click="tournamentStore.pauseTournament">
+          <i class="bi bi-pause"></i> {{ t('pause') }}
+        </button>
+        <button v-if="tournamentStore.status === 'stopped'"
+                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                @click="tournamentStore.resumeTournament">
+          <i class="bi bi-play"></i> {{ t('resume') }}
+        </button>
+        <button v-if="tournamentStore.status === 'inCourse' || tournamentStore.status === 'stopped'"
+                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                @click="confirmEndTournament">
+          <i class="bi bi-exclamation-triangle-fill"></i> {{ t('finish') }}
+        </button>
+        <button v-if="tournamentStore.status !== 'idle'"
+                class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+                @click="saveTournament">
+          <i class="bi bi-floppy-fill me-1"></i> {{ t('save') }}
+        </button>
+      </div>
     </div>
-    <div v-if="tournamentStore.status === 'finished'" class="d-flex justify-content-center align-items-center">
-      <Scoreboard class="fs-3 w-100"/>
+    <div v-if="tournamentStore.status === 'finished'" class="flex justify-center items-center mt-4">
+      <Scoreboard class="text-lg w-full"/>
     </div>
+
     <div v-else>
-      <div class="d-flex flex-column flex-md-row mt-2">
-        <div class="col-md-6 px-4">
-          <Scoreboard class="flex-grow-1 overflow-auto"/>
+      <div class="flex flex-col md:flex-row">
+        <div class="md:w-1/2 px-4">
+          <Scoreboard class="flex-grow overflow-auto"/>
           <AddPlayer/>
         </div>
-        <div class="col-md-6 d-flex flex-column align-items-center px-4">
-          <div class="w-100">
+        <div class="md:w-1/2 flex flex-col items-center px-4">
+          <div class="w-full">
             <GameList/>
             <QueuePlayers/>
           </div>
@@ -72,7 +64,6 @@ import QueuePlayers from './QueuePlayers.vue';
 import StatsModal from './StatsModal.vue';
 import SettingsModal from './SettingsModal.vue';
 import Swal from 'sweetalert2';
-import {BButton} from 'bootstrap-vue-3';
 import {useTournamentStore} from '../stores/useTournamentStore';
 import {useSettingsStore} from '../stores/useSettingsStore';
 import {useHistoryStore} from '../stores/useHistoryStore';
@@ -81,7 +72,7 @@ import {useI18n} from 'vue-i18n';
 import {onMounted, ref} from 'vue';
 
 const showReportsModal = ref(false);
-const {t} = useI18n({useScope: 'global'})
+const {t} = useI18n({useScope: 'global'});
 const tournamentStore = useTournamentStore();
 const settingsStore = useSettingsStore();
 const historyStore = useHistoryStore();
@@ -113,7 +104,7 @@ onMounted(async () => {
   await loadTournament();
 
   window.electron.ipcRenderer.on('open-statistics', () => {
-    showReportsModal.value = true
+    showReportsModal.value = true;
   });
 
   window.electron.ipcRenderer.on('open-settings', () => {
