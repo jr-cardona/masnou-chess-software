@@ -1,12 +1,12 @@
 <template>
   <div class="mt-3">
-    <h3 class="text-center text-yellow-500 text-2xl font-bold gap-2 flex items-center justify-center">
-      <i class="bi bi-puzzle"></i>{{ t('game', 2) }}
+    <h3 class="text-center text-yellow-500 text-2xl">
+      <i class="bi bi-puzzle"></i> {{ t('game', 2) }}
     </h3>
     <div class="mt-3 overflow-auto max-h-[700px]">
-      <table class="w-full border-collapse text-left custom-table">
+      <table class="w-full text-left custom-table bg-gray-800 border border-gray-900">
         <thead>
-        <tr class="bg-gray-200">
+        <tr class="bg-black text-yellow-500">
           <th class="p-2 text-center text-nowrap small-col">{{ t('board') }}</th>
           <th class="p-2">{{ t('white') }}</th>
           <th class="p-2 text-center"></th>
@@ -15,9 +15,9 @@
         </thead>
         <tbody>
         <tr v-for="(game, index) in gamesStore.activeGames" :key="index" class="border-b">
-          <td class="p-2 text-center">#{{ index + 1 }}</td>
-          <td class="p-2">{{ game.white.name }}</td>
-          <td class="p-2 text-center">
+          <td class="text-center">#{{ index + 1 }}</td>
+          <td class="pl-2">{{ game.white.name }}</td>
+          <td class="text-center">
             <div v-if="tournamentStore.status === 'inCourse'" class="flex justify-center gap-2">
               <button
                   class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm flex items-center text-black"

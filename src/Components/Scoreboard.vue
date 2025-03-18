@@ -1,23 +1,23 @@
 <template>
   <div class="mt-3">
-    <h3 class="text-center text-yellow-500 text-2xl font-bold gap-2 flex items-center justify-center">
+    <h3 class="text-center text-yellow-500 text-2xl">
       <i class="bi bi-trophy"></i> {{ t('scoreboard') }}
     </h3>
     <div class="mt-3 overflow-auto max-h-[700px]">
-      <table class="w-full border-collapse text-left custom-table">
+      <table class="w-full text-left custom-table bg-gray-800 border border-gray-900">
         <thead>
-        <tr>
+        <tr class="bg-black text-yellow-500">
           <th class="p-2 text-center">#</th>
           <th class="p-2">
             <div class="flex items-center">
               <span>{{ t('name') }}</span>
-              <div class="flex items-center bg-gray-700 text-white rounded-md ml-3 h-[25px]  border border-gray-400">
+              <div class="flex items-center bg-gray-700 text-white rounded-md ml-5 h-[25px] border border-gray-400">
                 <span class="px-2">
                   <i class="bi bi-search text-sm"></i>
                 </span>
                 <input
                     v-model="searchQuery"
-                    class="bg-gray-700 text-white text-sm outline-none px-2 h-[25px] rounded-r-md  border border-gray-400"
+                    class="bg-gray-700 text-white text-sm outline-none pl-2 h-[25px] rounded-r-md border border-gray-400"
                     :placeholder="t('search') + '...'"
                 />
               </div>

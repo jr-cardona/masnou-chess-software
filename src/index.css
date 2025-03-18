@@ -2,7 +2,7 @@
 
 body {
     margin: auto;
-    padding: 2rem;
+    padding: 0 2rem 2rem 2rem;
     background-color: #1E1E1E !important;
     color: #E0E0E0 !important;
 }
@@ -38,28 +38,8 @@ body {
     --scrollbar-thumb: #363636;
 }
 
-.custom-table {
-    border: 1px solid #444444;
-}
-
-.custom-table th {
-    background-color: #222 !important;
-    color: #f4b400 !important;
-}
-
-.custom-table tbody td {
-    background-color: rgba(33, 37, 41) !important;
-    color: white;
-}
-
-.custom-table tbody tr:nth-child(odd) td {
-    background-color: #b58863 !important;
-    color: white;
-}
-
-.custom-table tbody tr:nth-child(even) td {
-    background-color: #f0d9b5 !important;
-    color: black;
+button {
+    cursor: pointer;
 }
 
 ::-webkit-scrollbar {
