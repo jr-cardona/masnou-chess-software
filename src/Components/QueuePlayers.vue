@@ -1,11 +1,14 @@
 <template>
   <div class="mt-4">
-    <h4 v-if="queueStore.queue.length > 0" class="text-center text-warning"><i class="bi bi-hourglass-split"></i>
-      {{ t('queuePlayers') }}
-    </h4>
-    <ul class="list-group mt-3" style="max-height: 1000px">
-      <li v-for="(player, index) in queueStore.queue" :key="player" class="list-group-item bg-dark text-light">
-        <strong>#{{ index + 1 }}</strong> {{ player.name }} <span v-if="index === 0"><i class="bi bi-arrow-up"></i></span>
+    <h3 v-if="queueStore.queue.length > 0"
+        class="text-center text-yellow-500 text-xl">
+      <i class="bi bi-hourglass-split"></i> {{ t('queuePlayers') }}
+    </h3>
+    <ul class="mt-3 max-h-[1000px] overflow-auto">
+      <li v-for="(player, index) in queueStore.queue" :key="player"
+          class="bg-gray-700 text-white p-3 flex items-center justify-center rounded-lg mb-1">
+        <strong class="me-1">#{{ index + 1 }}</strong> {{ player.name }}
+        <span v-if="index === 0"><i class="bi bi-arrow-up"></i></span>
       </li>
     </ul>
   </div>
@@ -15,6 +18,6 @@
 import {useQueueStore} from '../stores/useQueueStore';
 import {useI18n} from "vue-i18n";
 
-const {t} = useI18n({useScope: 'global'})
+const {t} = useI18n({useScope: 'global'});
 const queueStore = useQueueStore();
 </script>
