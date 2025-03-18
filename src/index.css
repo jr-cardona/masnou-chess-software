@@ -1,9 +1,8 @@
+@import "tailwindcss";
+
 body {
     margin: auto;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding: 2rem;
     background-color: #1E1E1E !important;
     color: #E0E0E0 !important;
 }
@@ -51,6 +50,16 @@ body {
 .custom-table tbody td {
     background-color: rgba(33, 37, 41) !important;
     color: white;
+}
+
+.custom-table tbody tr:nth-child(odd) td {
+    background-color: #b58863 !important;
+    color: white;
+}
+
+.custom-table tbody tr:nth-child(even) td {
+    background-color: #f0d9b5 !important;
+    color: black;
 }
 
 ::-webkit-scrollbar {
