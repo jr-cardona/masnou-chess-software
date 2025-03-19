@@ -1,9 +1,15 @@
-import {Menu} from 'electron';
+import {ipcMain, Menu} from 'electron';
 
 const template = [
     {
         label: 'File',
         submenu: [
+            {
+                label: 'Restart Tournament',
+                click: () => {
+                    ipcMain.emit('restart-tournament');
+                }
+            },
             {role: 'quit'},
         ]
     },
@@ -14,6 +20,7 @@ const template = [
                 label: 'Undo',
                 accelerator: 'CmdOrCtrl+Z',
                 click: (menuItem, browserWindow) => {
+                    ipcMain.emit('perform-undo');
                     browserWindow.webContents.send('perform-undo');
                 }
             }
@@ -22,6 +29,13 @@ const template = [
     {
         label: 'View',
         submenu: [
+            {role: 'reload'},
+            {role: 'forceReload'},
+            {type: 'separator'},
+            {role: 'resetZoom'},
+            {role: 'zoomIn'},
+            {role: 'zoomOut'},
+            {type: 'separator'},
             {role: 'togglefullscreen'},
         ]
     },

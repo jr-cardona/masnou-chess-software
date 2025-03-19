@@ -146,3 +146,13 @@ ipcMain.handle('load-tournament', () => {
     }
     return null;
 });
+
+ipcMain.on('restart-tournament', () => {
+    const filePath = path.join(saveFilePath, 'tournamentV2.1.json');
+
+    if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+    }
+
+    BrowserWindow.getAllWindows().forEach(win => win.reload());
+});

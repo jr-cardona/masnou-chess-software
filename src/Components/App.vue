@@ -23,15 +23,15 @@
                 @click="tournamentStore.resumeTournament">
           <i class="bi bi-play"></i> {{ t('resume') }}
         </button>
-        <button v-if="tournamentStore.status === 'inCourse' || tournamentStore.status === 'stopped'"
-                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                @click="confirmEndTournament">
-          <i class="bi bi-exclamation-triangle-fill"></i> {{ t('finish') }}
-        </button>
         <button v-if="tournamentStore.status !== 'idle'"
                 class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition"
                 @click="saveTournament">
           <i class="bi bi-floppy-fill me-1"></i> {{ t('save') }}
+        </button>
+        <button v-if="tournamentStore.status === 'inCourse' || tournamentStore.status === 'stopped'"
+                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                @click="confirmEndTournament">
+          <i class="bi bi-exclamation-triangle-fill"></i> {{ t('finish') }}
         </button>
       </div>
     </div>
